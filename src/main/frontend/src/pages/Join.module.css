@@ -1,0 +1,70 @@
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    /*border: 1px solid black;*/
+    text-align: center; /* 전체 텍스트 중앙 정렬 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 상하 중간 정렬 */
+    height: 100vh; /* 뷰포트 높이 기준으로 가운데 정렬 */
+}
+
+.errorMessage {
+    color: red;
+    margin-bottom: 15px;
+}
+
+.inputGroup {
+    margin-bottom: 15px;
+}
+
+.inputField {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 0px; /* 버튼과 동일하게 둥글게 처리 */
+}
+
+.checkboxContainer {
+    margin-top: 10px;
+}
+
+.checkboxLabel {
+    display: block;
+    margin-bottom: 10px;
+    text-align: left;
+    padding-left: 25px;
+}
+
+.allergySelection {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.allergyTitle {
+    margin-bottom: 5px;
+}
+
+.allergyOption {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.button {
+    background-color: #5c5cfc;
+    width: 200px;
+    height: 40px;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 20px; /* 버튼 모서리 둥글게 */
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.button:hover {
+    opacity: 0.9; /* 회원가입 버튼 호버 효과 */
+}

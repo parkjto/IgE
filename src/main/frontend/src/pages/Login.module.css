@@ -1,0 +1,71 @@
+/* CSS 개선 */
+body, html {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    height: 100%; /* 전체 높이 설정 */
+}
+
+.appContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.container {
+    padding: 40px;
+    border: 1px solid #ccc;
+    text-align: center;
+    background-color: white;
+    border-radius: 0px;
+    max-width: 300px; /* 너비를 고정하거나 원하는 크기로 조정 */
+    width: 100%;
+}
+
+.inputField, .button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 0px;
+    box-sizing: border-box;
+}
+
+.button {
+    background-color: #4c4cff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #3b3bdb;
+}
+
+.errorMessage {
+    font-size: 13px;
+    color: red;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.footerLinks {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.footerLinks a {
+    color: grey;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.footerLinks a:hover {
+    text-decoration: underline;
+}
+
+.logoIcon {
+    width: 80px; /* 원하는 너비 */
+    height: auto; /* 이미지 비율을 유지하면서 크기 조정 */
+}

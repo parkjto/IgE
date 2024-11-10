@@ -1,0 +1,71 @@
+body {
+    margin: 0;
+    padding-top: 120px; /* 헤더 높이만큼 여백 추가 */
+}
+
+.headerContainer {
+    position: fixed; /* 헤더를 상단에 고정 */
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px 240px;
+    background-color: #f8f9fa;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* 다른 요소 위에 배치 */
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4c4cff;
+    display: flex;
+    align-items: center;
+}
+
+.logoIcon {
+    width: 80px;
+    height: 60px;
+    margin-right: 8px;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 10px;
+}
+
+.button {
+    padding: 8px 16px;
+    font-size: 16px;
+    border: none;
+    border-radius: 20px; /* 기본 둥글기 설정 */
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+/* 로그아웃 및 로그인 버튼 호버 스타일 제거 */
+.loginnout {
+    background-color: transparent;
+    color: #333;
+    border-radius: 20px; /* 둥글기 설정 */
+}
+
+/* 회원가입 버튼 스타일 */
+.getStarted {
+    width: 100px;
+    background-color: #5c5cfc;
+    color: white;
+    border-radius: 20px; /* 회원가입 버튼 둥글기 설정 */
+}
+
+/* 로그인 및 로그아웃 버튼 호버 스타일 제거 */
+.loginnout:hover {
+    background-color: transparent; /* 호버 시 배경색 유지 */
+}
+
+/* 회원가입 버튼 호버 스타일 */
+.getStarted:hover {
+    opacity: 0.9; /* 회원가입 버튼만 호버 효과 */
+}

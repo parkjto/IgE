@@ -1,0 +1,58 @@
+.container {
+    padding: 5em;
+    border: 1px solid black;
+    margin: 30px auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    overflow: auto;
+}
+
+.tabContainer {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.tab {
+    padding: 10px 20px;
+    font-weight: bold;
+    color: #555;
+    border-bottom: 2px solid transparent;
+    transition: color 0.3s;
+}
+
+.tab.active {
+    color: #4c4cff;
+    border-bottom: 2px solid #4c4cff;
+}
+
+.menuListBox{
+    border: 1px solid #999999;
+    border-radius: 4px;
+
+
+}
+
+.menuList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.menuItem {
+    padding: 10px 0;
+}
+
+.menuName {
+    font-size: 1.1em;
+    margin: 5px 0;
+}
+
+.menuIngredients {
+    color: #777;
+}
+
+.nonRecommended {
+    color: red;
+    font-weight: bold;
+}

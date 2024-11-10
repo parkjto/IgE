@@ -1,22 +1,25 @@
 package com.SW.IgE.service;
 
+
 import com.SW.IgE.entity.User;
 import com.SW.IgE.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+
+    }
 
     public boolean existsByUseremail(String email) {
         return userRepository.existsByUseremail(email);
@@ -45,11 +48,4 @@ public class UserService {
                 .orElse(List.of());
     }
 
-    public void updateUserAllergies(String useremail, List<String> allergies) {
-        User user = getUserInfo(useremail);
-        if (user != null) {
-            user.setUser_ige(allergies);
-            userRepository.save(user);
-        }
-    }
 }

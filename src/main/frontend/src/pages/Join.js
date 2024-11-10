@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import styles from './Join.module.css'; // CSS 모듈 import
+import Header from "./Header"; // Header 컴포넌트 import
 
 function Join() {
-    // 사용자 정보 상태 초기화
     const [user, setUser] = useState({
         name: '',
         age: '',
@@ -17,17 +18,15 @@ function Join() {
     const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태 추가
     const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate 훅
 
-    // 입력 필드 변경 처리
     const handleChange = (e) => {
         const { id, value } = e.target;
-        setUser({ ...user, [id]: value });
+        setUser(prevUser => ({ ...prevUser, [id]: value }));
         setErrorMessage(''); // 입력 시 에러 메시지 초기화
     };
 
-    // 알레르기 체크박스 선택/해제 처리
     const handleAllergyChange = (e) => {
         const { value, checked } = e.target;
-        setUser((prevState) => {
+        setUser(prevState => {
             const updatedAllergies = checked
                 ? [...prevState.user_ige, value] // 체크 시 알레르기 추가
                 : prevState.user_ige.filter(ige => ige !== value); // 체크 해제 시 알레르기 제거
@@ -35,33 +34,25 @@ function Join() {
         });
     };
 
-    // 폼 제출 시 실행되는 함수
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // 필수 입력 값 유효성 검사
         if (!user.name || !user.useremail || !user.password || !passwordConfirm || !user.age) {
             alert('모든 필드를 올바르게 입력해주세요.');
             return;
         }
 
-        // 비밀번호 확인 검사
         if (user.password !== passwordConfirm) {
             setErrorMessage('비밀번호가 일치하지 않습니다.'); // 비밀번호 불일치 에러 메시지
             return;
         }
 
-        // formData에 포함할 데이터 준비
         const formData = {
             ...user,
             age: user.age ? Number(user.age) : null, // 나이를 숫자로 변환 (입력 시에만 변환)
         };
 
-        // formData 로그 출력 (디버깅 용도)
-        console.log("회원가입 데이터: ", formData);
-
         try {
-            // 서버에 회원가입 요청
             const response = await axios.post('http://localhost:8081/join', formData, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -71,7 +62,6 @@ function Join() {
             navigate('/'); // 회원가입 성공 시 메인 페이지로 이동
         } catch (error) {
             console.error('회원가입 에러: ', error.response ? error.response.data : error);
-            // 에러 메시지 설정
             if (error.response && error.response.status === 409) {
                 setErrorMessage(error.response.data); // 이미 존재하는 이메일에 대한 에러 메시지
             } else {
@@ -82,85 +72,92 @@ function Join() {
 
     return (
         <div>
-            <Link to="/login">로그인</Link> <Link to="/Main">메인 페이지</Link>
-            <br />
-            <h3>회원가입</h3>
-            {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>} {/* 에러 메시지 표시 */}
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    id="name"
-                    value={user.name}
-                    placeholder="이름"
-                    onChange={handleChange}
-                    required
-                />
-                <br/>
-                <input
-                    type="number"
-                    id="age"
-                    value={user.age}
-                    placeholder="나이"
-                    onChange={handleChange}
-                    required
-                />
-                <br/>
-                <input
-                    type="email"
-                    id="useremail"
-                    value={user.useremail}
-                    placeholder="이메일"
-                    onChange={handleChange}
-                    required
-                />
-                <br/>
-                <input
-                    type="password"
-                    id="password"
-                    value={user.password}
-                    placeholder="비밀번호"
-                    onChange={handleChange}
-                    required
-                />
-                <br/>
-                <input
-                    type="password"
-                    id="passwordConfirm"
-                    value={passwordConfirm}
-                    placeholder="비밀번호 확인"
-                    onChange={(e) => setPasswordConfirm(e.target.value)} // 비밀번호 확인 상태 업데이트
-                    required
-                />
-                <br/>
-                <label>
-                    <input
-                        type="checkbox"
-                        checked={hasAllergy}
-                        onChange={(e) => setHasAllergy(e.target.checked)}
-                    />
-                    알레르기
-                </label>
-                <br/>
-                {hasAllergy && (
-                    <div>
-                        <h4>알레르기 선택</h4>
-                        {/* 알레르기 선택 체크박스 목록 */}
-                        {['계란', '콩', '우유', '밀', '땅콩', '생선', '갑각류', '견과류'].map(ige => (
-                            <label key={ige}>
-                                <input
-                                    type="checkbox"
-                                    value={ige}
-                                    checked={user.user_ige.includes(ige)} // 선택된 알레르기 유지
-                                    onChange={handleAllergyChange}
-                                />
-                                {ige}
-                            </label>
-                        ))}
+            <Header user={user} />
+
+            <div className={styles.container}>
+                <h3>회원가입</h3>
+                {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>} {/* 에러 메시지 표시 */}
+                <form onSubmit={handleSubmit}>
+                    <div className={styles.inputGroup}>
+                        <input
+                            type="text"
+                            id="name"
+                            className={styles.inputField}
+                            value={user.name}
+                            placeholder="이름"
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="number"
+                            id="age"
+                            className={styles.inputField}
+                            value={user.age}
+                            placeholder="나이"
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="email"
+                            id="useremail"
+                            className={styles.inputField}
+                            value={user.useremail}
+                            placeholder="이메일"
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="password"
+                            id="password"
+                            className={styles.inputField}
+                            value={user.password}
+                            placeholder="비밀번호"
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="password"
+                            id="passwordConfirm"
+                            className={styles.inputField}
+                            value={passwordConfirm}
+                            placeholder="비밀번호 확인"
+                            onChange={(e) => setPasswordConfirm(e.target.value)}
+                            required
+                        />
                     </div>
-                )}
-                <br/>
-                <button type="submit">회원가입</button>
-            </form>
+
+                    <div className={styles.checkboxContainer}>
+                        <label className={styles.checkboxLabel}>
+                            <input
+                                type="checkbox"
+                                className={styles.checkboxInput}
+                                checked={hasAllergy}
+                                onChange={(e) => setHasAllergy(e.target.checked)}
+                            /> 알레르기
+                        </label>
+
+                        {hasAllergy && (
+                            <div className={styles.allergySelection}>
+                                <h4 className={styles.allergyTitle}>알레르기 선택</h4>
+                                {['계란', '콩', '우유', '밀', '땅콩', '생선', '갑각류', '견과류'].map(ige => (
+                                    <label className={styles.allergyOption} key={ige}>
+                                        <input
+                                            type="checkbox"
+                                            className={styles.allergyCheckbox}
+                                            value={ige}
+                                            checked={user.user_ige.includes(ige)} // 선택된 알레르기 유지
+                                            onChange={handleAllergyChange}
+                                        />
+                                        {ige}
+                                    </label>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <button type="submit" className={styles.button}>회원가입</button>
+                </form>
+            </div>
         </div>
     );
 }
