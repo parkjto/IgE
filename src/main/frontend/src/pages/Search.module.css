@@ -1,0 +1,137 @@
+/* Search.module.css */
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.searchContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.searchInput {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.searchButton {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.searchButton:hover {
+    background-color: #45a049;
+}
+
+.map {
+    width: 100%;
+    height: 400px;  /* 변경 가능, 필요 시 100vh로 변경 */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.searchResults {
+    margin-top: 20px;
+}
+
+.restaurantItem {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    transition: box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.restaurantItem:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.restaurantItem strong {
+    font-size: 18px;
+    color: #333;
+}
+
+.restaurantItem p {
+    font-size: 14px;
+    color: #666;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);  /* 배경 투명도 약간 조정 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+}
+
+.close:hover {
+    color: #333;
+}
+
+/* 기존 코드 유지 */
+
+/* 에러 메시지 스타일 */
+.errorMessage {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* 로딩 중 상태 스타일 */
+.searchButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+

@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/menus")
 @CrossOrigin(origins = "http://localhost:3000") // React 앱이 실행되는 포트를 지정합니다.
@@ -20,9 +18,23 @@ public class MenuController {
         this.menuService = menuService;
     }
 
-    @GetMapping
-    public List<Menu> getAllMenus() {
-        logger.info("Fetching all menus");
-        return menuService.getAllMenus(); // 전체 메뉴 정보를 반환
+    @GetMapping("/random")
+    public Menu getRandomMenu() {
+        logger.info("Fetching random menu");
+
+        try {
+            return menuService.getRandomMenu();
+        } catch (IllegalStateException e) {
+            logger.error("Error fetching random menu: {}", e.getMessage());
+            return null;  // 예외가 발생한 경우 null을 반환하거나, 적절한 오류 메시지 반환
+        }
     }
 }
+
+
+
+//    @GetMapping
+//    public List<Menu> getAllMenus() {
+//        logger.info("Fetching all menus");
+//        return menuService.getAllMenus(); // 전체 메뉴 정보를 반환
+//    }

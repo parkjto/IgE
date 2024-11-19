@@ -40,7 +40,7 @@ const Header = ({ user, onLogout }) => {
             </div>
             {!isAuthPage && ( // 인증 페이지가 아닐 때만 버튼 표시
                 <div className={styles.buttonGroup}>
-                    {user.name ? (
+                    {user?.name ? (  // user 객체가 존재할 때만 확인
                         <button className={`${styles.button} ${styles.loginnout}`} onClick={handleLogoutClick}>
                             로그아웃
                         </button>

@@ -10,8 +10,10 @@
     "http-proxy-middleware": "^3.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-kakao-maps-sdk": "^1.1.27",
+    "react-naver-maps": "^0.1.3",
     "react-router-dom": "^6.26.2",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "styled-components": "^6.1.13",
     "web-vitals": "^2.1.4"
   },
@@ -40,6 +42,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "react-devtools": "^6.0.1"
   }
 }

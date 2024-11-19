@@ -1,12 +1,27 @@
 /* RenderLoggedOut.module.css */
 .container {
     display: flex;
-    flex-direction: column; /* 수직 방향 정렬 */
-    justify-content: center; /* 수평 중앙 정렬 */
-    align-items: center; /* 수직 중앙 정렬 */
-    height: 100vh; /* 화면 전체 높이 */
-    text-align: center; /* 텍스트 중앙 정렬 */
-    /*background-color: #f8f9fa; !* 배경 색상 설정 (선택 사항) *!*/
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /*height: 100vh; !* 화면의 전체 높이 *!*/
+    text-align: center;
+    /*background-color: #f8f9fa;*/
+    padding: 0;
+    margin-top: 80px;
+}
+
+.Informcontainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /*height: 100vh; !* 화면의 전체 높이 *!*/
+    text-align: center;
+    /*background-color: #f8f9fa;*/
+    padding: 0;
+    margin-top: 30px;
+
 }
 
 .link {

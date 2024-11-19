@@ -3,22 +3,34 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* 화면의 전체 높이 */
+    /*height: 100vh; !* 화면의 전체 높이 *!*/
     text-align: center;
     /*background-color: #f8f9fa;*/
-    padding: 20px;
+    padding: 0;
+    margin-top: 30px;
 }
-
+.Informcontainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /*height: 100vh; !* 화면의 전체 높이 *!*/
+    text-align: center;
+    /*background-color: #f8f9fa;*/
+    padding: 0;
+    margin-top: 30px;
+}
 .welcomeText {
-    font-size: 1.2em;
-    color: #333;
-    margin-bottom: 20px;
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .allergyInfo {
-    font-size: 1.1em;
-    color: #555;
-    margin-bottom: 20px;
+    color: #303030;
+    font-size: 17px;
+    margin-top: 0px;
 }
 
 .menuLink {
@@ -31,4 +43,8 @@
 
 .menuLink:hover {
     text-decoration: underline;
+}
+
+.abutton{
+
 }

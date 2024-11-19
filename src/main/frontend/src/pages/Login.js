@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import styles from './Login.module.css'; // CSS 모듈 import
-import logoimg from "../img/android-chrome-192x192.png"; // 로고 이미지 경로
+import styles from './Login.module.css';
+import logoimg from "../img/android-chrome-192x192.png";
 
 const API_URL = 'http://localhost:8081/login';
 
@@ -53,6 +53,7 @@ function Login({ setUserData }) {
             });
 
             if (response.status === 200) {
+                // 로그인 성공 후 데이터 저장
                 alert('로그인 성공!');
                 localStorage.setItem('userData', JSON.stringify(response.data));
                 setUserData({
@@ -61,8 +62,7 @@ function Login({ setUserData }) {
                     allergies: response.data.allergies,
                     name: response.data.name
                 });
-                navigate('/'); // 로그인 성공 시 리디렉션
-                setUser({ useremail: '', password: '' });
+                navigate('/'); // 로그인 성공 시 메인 페이지로 이동
             }
         } catch (error) {
             if (error.response) {
@@ -102,7 +102,6 @@ function Login({ setUserData }) {
                         onChange={handleChange}
                         required
                     />
-
                     <button type="submit" className={styles.button} disabled={loading}>
                         {loading ? '로딩 중...' : '로그인'}
                     </button>

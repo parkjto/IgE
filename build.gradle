@@ -9,7 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(23)
+		languageVersion = JavaLanguageVersion.of(23) // 확인: Java 23이 아니라 사용 중인 Java 버전 맞게 설정
 	}
 }
 
@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+	// Spring Boot 스타터 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -33,13 +34,26 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-core'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 	implementation 'javax.servlet:javax.servlet-api:4.0.1'
+
+	// Lombok 의존성 (컴파일 타임 의존성)
 	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// MySQL 커넥터
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// 테스트 의존성
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Logback 의존성 추가 (SLF4J 로깅 구현체)
+	implementation 'ch.qos.logback:logback-classic:1.4.11' // 최신 버전 확인
 }
 
+// -parameters 플래그 추가
+tasks.withType(JavaCompile) {
+	options.compilerArgs += ['-parameters']
+}
 
 tasks.named('test') {
 	useJUnitPlatform()

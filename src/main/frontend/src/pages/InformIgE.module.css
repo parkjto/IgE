@@ -1,0 +1,35 @@
+.bubbleBox {
+    width: 700px;
+    display: flex; /* inline-flex 대신 flex 사용 */
+    align-items: center;
+    justify-content: center; /* 내용 중앙 정렬 */
+    padding: 10px 20px;
+    background-color: #f8f9fd;
+    border: 2px solid #4e3fef;
+    border-radius: 100px;
+    color: #333;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center; /* 텍스트 가운데 정렬 */
+}
+
+.bubbleIcon {
+    margin-right: 10px; /* 아이콘과 텍스트 간격 조정 */
+    font-size: 25px;
+}
+
+.bubbleText {
+    display: flex; /* flex 사용 */
+    align-items: center;
+    justify-content: center; /* 텍스트 중앙 정렬 */
+    flex: 1;
+    text-align: center;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+    display: flex; /* flex 사용 */
+    align-items: center;
+    justify-content: center; /* 텍스트 중앙 정렬 */
+}

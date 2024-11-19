@@ -41,6 +41,7 @@ public class User {
     @Positive // 나이 필드는 양수여야 함
     private Integer age;
 
+    @Builder.Default
     @ElementCollection // 별도의 테이블에 user_ige 데이터를 저장하도록 설정
     @CollectionTable(name = "user_ige", joinColumns = @JoinColumn(name = "user_id")) // user_ige 테이블에 user_id 컬럼을 FK로 설정
     @Column(name = "user_ige") // user_ige 컬렉션의 컬럼 이름을 지정
