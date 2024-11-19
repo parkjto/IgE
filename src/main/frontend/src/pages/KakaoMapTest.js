@@ -37,14 +37,12 @@ const KakaoMapTest = ({ userPosition, clickedRestaurant }) => {
                     });
                     circle.setMap(map);
 
-                    // 클릭된 식당 마커 표시
-                    if (clickedRestaurant && clickedRestaurant.mapx && clickedRestaurant.mapy) {
-                        // mapx, mapy가 정수일 경우, 소수점으로 변환
+                    // 클릭된 식당 마커 표시 (변환 없이 좌표 그대로 사용)
+                    if (clickedRestaurant && clickedRestaurant.latitude && clickedRestaurant.longitude) {
                         const restaurantPosition = new window.kakao.maps.LatLng(
-                            clickedRestaurant.mapy / 1000000, // 위도 소수점 6자리
-                            clickedRestaurant.mapx / 1000000  // 경도 소수점 6자리
+                            clickedRestaurant.latitude,
+                            clickedRestaurant.longitude
                         );
-
 
                         const restaurantMarker = new window.kakao.maps.Marker({
                             map,

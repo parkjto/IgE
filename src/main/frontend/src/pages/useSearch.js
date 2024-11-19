@@ -3,14 +3,17 @@ import axios from "axios";
 
 // 주소를 좌표로 변환하는 함수
 const geocodeAddress = async (address) => {
+    if (!window.kakao.maps.services.Geocoder) {
+        console.error("Geocoder 초기화 실패: Kakao Maps SDK가 로드되지 않았습니다.");
+        throw new Error("Kakao Maps SDK가 로드되지 않았습니다.");
+    }
+
     const geocoder = new window.kakao.maps.services.Geocoder();
     return new Promise((resolve, reject) => {
         geocoder.addressSearch(address, (result, status) => {
             if (status === window.kakao.maps.services.Status.OK) {
-                let latitude = result[0].y; // 위도
-                let longitude = result[0].x; // 경도
-                latitude = latitude.toFixed(6);  // 소수점 6자리로 제한
-                longitude = longitude.toFixed(6); // 소수점 6자리로 제한
+                const latitude = parseFloat(result[0].y); // 위도
+                const longitude = parseFloat(result[0].x); // 경도
                 resolve({ latitude, longitude });
             } else {
                 reject("주소 변환 실패");
@@ -21,21 +24,28 @@ const geocodeAddress = async (address) => {
 
 
 
+
+
+
 // 거리 계산 함수 (Haversine 공식을 사용)
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // 지구 반지름 (km)
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const toRad = (value) => (value * Math.PI) / 180;
+    const R = 6371; // 지구 반지름 (단위: km)
+
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
     const a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c; // 거리 (km)
-    return distance.toFixed(2);  // 소수점 2자리로 제한
+    const distance = R * c;
+
+
+
+    return parseFloat(distance.toFixed(2)); // 소수점 2자리까지 반환
 };
+
 
 
 const useSearch = (query, userPosition) => {
@@ -49,7 +59,19 @@ const useSearch = (query, userPosition) => {
         if (clickedRestaurant && userPosition) {
             const calculateRestaurantDistance = async () => {
                 try {
-                    const { latitude, longitude } = await geocodeAddress(clickedRestaurant.address);
+                    let latitude, longitude;
+
+                    if (clickedRestaurant.latitude && clickedRestaurant.longitude) {
+                        // 좌표가 이미 존재하는 경우
+                        latitude = parseFloat(clickedRestaurant.latitude) / 1e6; // 소수점 변환
+                        longitude = parseFloat(clickedRestaurant.longitude) / 1e6;
+                    } else {
+                        // 주소를 좌표로 변환
+                        const coords = await geocodeAddress(clickedRestaurant.address);
+                        latitude = coords.latitude;
+                        longitude = coords.longitude;
+                    }
+
                     const distance = calculateDistance(
                         userPosition.latitude,
                         userPosition.longitude,
@@ -65,6 +87,8 @@ const useSearch = (query, userPosition) => {
             calculateRestaurantDistance();
         }
     }, [clickedRestaurant, userPosition]);
+
+
 
     const handleSearch = async () => {
         if (!query.trim()) {

@@ -74,10 +74,11 @@ const Search = () => {
                     >
                         <strong>{restaurant.title.replace(/<[^>]+>/g, "")}</strong>
                         <p>{restaurant.address}</p>
-                        {restaurantDistance && (
+                        {restaurantDistance && typeof restaurantDistance === "number" ? (
                             <p>현재 위치와의 거리: {restaurantDistance.toFixed(2)} km</p>
+                        ) : (
+                            <p>위치 정보를 확인할 수 없습니다.</p>
                         )}
-
                     </div>
                 ))}
             </div>
