@@ -13,23 +13,9 @@ const Search = () => {
         loading,
         error: searchError,
         setClickedRestaurant,
-        restaurantDistance, // 거리 정보
+        restaurantDistance,
         handleSearch,
     } = useSearch(query, userPosition);
-
-    // 오류 타입별 스타일 및 아이콘
-    const getErrorStyle = (errorType) => {
-        const errorStyles = {
-            location: styles.locationError,
-            query: styles.queryError,
-            noResults: styles.noResultsError,
-            network: styles.networkError,
-        };
-        return errorStyles[errorType] || styles.defaultError;
-    };
-
-    console.log("현재 Query 상태:", query); // 디버깅 추가
-    console.log("현재 위치 상태:", userPosition); // 디버깅 추가
 
     return (
         <div className={styles.container}>
@@ -52,11 +38,7 @@ const Search = () => {
                 </button>
             </div>
 
-            {searchError && (
-                <div className={`${styles.errorMessage} ${getErrorStyle(searchError.type)}`}>
-                    {searchError}
-                </div>
-            )}
+            {searchError && <div className={styles.errorMessage}>{searchError}</div>}
 
             <KakaoMapTest userPosition={userPosition} clickedRestaurant={clickedRestaurant} />
 
@@ -70,7 +52,17 @@ const Search = () => {
                     <div
                         key={index}
                         className={styles.restaurantItem}
-                        onClick={() => setClickedRestaurant(restaurant)}
+                        onClick={() => {
+                            setClickedRestaurant(restaurant);
+
+                            // 선택된 식당의 정보를 로그로 출력
+                            console.log("사용자가 선택한 식당:", {
+                                title: restaurant.title.replace(/<[^>]+>/g, ""),
+                                address: restaurant.address,
+                                latitude: restaurant.latitude,
+                                longitude: restaurant.longitude,
+                            });
+                        }}
                     >
                         <strong>{restaurant.title.replace(/<[^>]+>/g, "")}</strong>
                         <p>{restaurant.address}</p>

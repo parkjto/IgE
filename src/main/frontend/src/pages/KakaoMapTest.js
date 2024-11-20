@@ -1,8 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-const KakaoMapTest = ({ userPosition, clickedRestaurant }) => {
+const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible }) => {
+    const mapRef = useRef(null);
+    const [map, setMap] = useState(null);
+    const [markers, setMarkers] = useState([]);
+
+    // 지도 초기화
     useEffect(() => {
-        if (userPosition) {
+        if (userPosition && !map) {
             const script = document.createElement("script");
             script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=3abe3146cdb7a57e6e03b6ca6e652183&autoload=false`;
             script.async = true;
@@ -13,62 +18,75 @@ const KakaoMapTest = ({ userPosition, clickedRestaurant }) => {
                     const container = document.getElementById("map");
                     const options = {
                         center: new window.kakao.maps.LatLng(userPosition.latitude, userPosition.longitude),
-                        level: 4, // 지도 확대 수준
+                        level: 4,
                     };
-                    const map = new window.kakao.maps.Map(container, options);
 
-                    // 현재 위치 마커 추가
-                    const userMarker = new window.kakao.maps.Marker({
-                        map,
+                    const kakaoMap = new window.kakao.maps.Map(container, options);
+                    setMap(kakaoMap);
+
+                    // 현재 위치 마커 생성
+                    const currentPositionMarker = new window.kakao.maps.Marker({
+                        map: kakaoMap,
                         position: new window.kakao.maps.LatLng(userPosition.latitude, userPosition.longitude),
                         title: "현재 위치",
                     });
 
-                    // 반경 1km 원 표시
-                    const circle = new window.kakao.maps.Circle({
-                        center: new window.kakao.maps.LatLng(userPosition.latitude, userPosition.longitude),
-                        radius: 1000, // 반경 (미터 단위)
-                        strokeWeight: 2,
-                        strokeColor: "#FF0000",
-                        strokeOpacity: 0.3,
-                        strokeStyle: "solid",
-                        fillColor: "#FF0000",
-                        fillOpacity: 0.08,
-                    });
-                    circle.setMap(map);
+                    // 현재 위치 좌표와 타입 출력
+                    console.log("현재 위치 좌표:", { latitude: userPosition.latitude, longitude: userPosition.longitude });
+                    console.log("latitude 타입:", typeof userPosition.latitude);
+                    console.log("longitude 타입:", typeof userPosition.longitude);
 
-                    // 클릭된 식당 마커 표시 (변환 없이 좌표 그대로 사용)
-                    if (clickedRestaurant && clickedRestaurant.latitude && clickedRestaurant.longitude) {
-                        const restaurantPosition = new window.kakao.maps.LatLng(
-                            clickedRestaurant.latitude,
-                            clickedRestaurant.longitude
-                        );
-
-                        const restaurantMarker = new window.kakao.maps.Marker({
-                            map,
-                            position: restaurantPosition,
-                            title: clickedRestaurant.title,
-                        });
-
-                        // 지도 중심을 클릭된 식당 위치로 이동
-                        map.setCenter(restaurantPosition);
-                    } else {
-                        console.error("식당 좌표가 유효하지 않거나 변환할 수 없습니다:", clickedRestaurant);
-                    }
+                    setMarkers([currentPositionMarker]); // 배열에 추가된 현재 위치 마커만 저장
                 });
             };
         }
-    }, [userPosition, clickedRestaurant]);
+    }, [userPosition, map]);
 
-    if (!userPosition) {
-        return <div>위치를 확인 중입니다...</div>;
-    }
+    // 클릭된 식당에 마커 표시 및 중심 이동
+    useEffect(() => {
+        if (clickedRestaurant && map) {
+            // 좌표 값 변환 (정수 -> 소수)
+            const latitude = parseFloat(clickedRestaurant.latitude) / 10000000; // 소수점으로 변환
+            const longitude = parseFloat(clickedRestaurant.longitude) / 10000000; // 소수점으로 변환
 
-    return (
-        <div>
-            <div id="map" style={{ width: "100%", height: "400px" }}></div>
-        </div>
-    );
+            console.log("클릭된 식당 좌표:", { latitude, longitude });
+            console.log("latitude 타입:", typeof latitude);
+            console.log("longitude 타입:", typeof longitude);
+
+            // 기존 마커 제거
+            markers.forEach((marker) => marker.setMap(null));
+
+            const restaurantPosition = new window.kakao.maps.LatLng(latitude, longitude);
+
+            const restaurantMarker = new window.kakao.maps.Marker({
+                map: map,
+                position: restaurantPosition,
+                title: clickedRestaurant.title,
+            });
+
+            setMarkers([restaurantMarker]); // 새 마커만 상태로 설정
+
+            // 지도 중심 이동
+            map.setCenter(restaurantPosition);
+        }
+    }, [clickedRestaurant, map]);
+
+    // 모달, 탭 등에서 지도 영역이 갱신되었음을 알림
+    useEffect(() => {
+        if (map && isMapVisible) {
+            const timeoutId = setTimeout(() => {
+                map.relayout();
+                if (userPosition) {
+                    map.setCenter(
+                        new window.kakao.maps.LatLng(userPosition.latitude, userPosition.longitude)
+                    );
+                }
+            }, 500); // 딜레이를 약간 늘려 브라우저 업데이트 시간 확보
+            return () => clearTimeout(timeoutId); // 메모리 누수 방지
+        }
+    }, [isMapVisible, map, userPosition]);
+
+    return <div id="map" style={{ width: "100%", height: "400px" }}></div>;
 };
 
 export default KakaoMapTest;
