@@ -13,7 +13,6 @@ const Search = () => {
         loading,
         error: searchError,
         setClickedRestaurant,
-        restaurantDistance,
         handleSearch,
     } = useSearch(query, userPosition);
 
@@ -40,6 +39,8 @@ const Search = () => {
 
             {searchError && <div className={styles.errorMessage}>{searchError}</div>}
 
+            {locationError && <div className={styles.errorMessage}>{locationError}</div>}
+
             <KakaoMapTest userPosition={userPosition} clickedRestaurant={clickedRestaurant} />
 
             <div className={styles.searchResults}>
@@ -54,20 +55,12 @@ const Search = () => {
                         className={styles.restaurantItem}
                         onClick={() => {
                             setClickedRestaurant(restaurant);
-
-                            // 선택된 식당의 정보를 로그로 출력
-                            console.log("사용자가 선택한 식당:", {
-                                title: restaurant.title.replace(/<[^>]+>/g, ""),
-                                address: restaurant.address,
-                                latitude: restaurant.latitude,
-                                longitude: restaurant.longitude,
-                            });
                         }}
                     >
                         <strong>{restaurant.title.replace(/<[^>]+>/g, "")}</strong>
                         <p>{restaurant.address}</p>
-                        {restaurantDistance && typeof restaurantDistance === "number" ? (
-                            <p>현재 위치와의 거리: {restaurantDistance.toFixed(2)} km</p>
+                        {restaurant.distance && typeof restaurant.distance === "number" ? (
+                            <p>현재 위치와의 거리: {restaurant.distance.toFixed(2)} km</p>
                         ) : (
                             <p>위치 정보를 확인할 수 없습니다.</p>
                         )}

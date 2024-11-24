@@ -21,6 +21,7 @@ const useSearch = (query, userPosition) => {
     const [clickedRestaurant, setClickedRestaurant] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [restaurantDistance, setRestaurantDistance] = useState(null);
 
     const handleSearch = async () => {
         if (!query.trim()) {
@@ -43,15 +44,6 @@ const useSearch = (query, userPosition) => {
                     const latitude = parseFloat(restaurant.latitude);
                     const longitude = parseFloat(restaurant.longitude);
 
-                    console.log("좌표 데이터 상태:", {
-                        title: restaurant.title,
-                        address: restaurant.address,
-                        rawLatitude: restaurant.latitude,
-                        rawLongitude: restaurant.longitude,
-                        parsedLatitude: latitude,
-                        parsedLongitude: longitude,
-                    });
-
                     if (isNaN(latitude) || isNaN(longitude)) {
                         console.error("잘못된 좌표 데이터:", {
                             latitude: restaurant.latitude,
@@ -67,10 +59,26 @@ const useSearch = (query, userPosition) => {
                     };
                 }).filter(Boolean); // 유효한 데이터만 유지
 
-                setResults(validResults);
+                // 사용자 위치와의 거리 계산
+                const resultsWithDistance = validResults.map((restaurant) => {
+                    if (userPosition) {
+                        const { latitude, longitude } = restaurant;
+                        const distance = calculateDistance(
+                            userPosition.latitude,
+                            userPosition.longitude,
+                            latitude,
+                            longitude
+                        );
+                        return {
+                            ...restaurant,
+                            distance, // 거리 추가
+                        };
+                    }
+                    return restaurant;
+                });
 
-                console.log("검색된 식당 목록:", validResults);
-                setClickedRestaurant(validResults[0]); // 첫 번째 결과 선택
+                setResults(resultsWithDistance);
+                setClickedRestaurant(resultsWithDistance[0]); // 첫 번째 결과 선택
             }
         } catch (err) {
             console.error("API 요청 실패:", err);
@@ -85,6 +93,7 @@ const useSearch = (query, userPosition) => {
         clickedRestaurant,
         loading,
         error,
+        restaurantDistance,
         setClickedRestaurant,
         handleSearch,
     };
