@@ -9,18 +9,18 @@ import RestaurantLocation from "./pages/RestaurantLocation";
 import Search from "./pages/Search";
 import MapTest from "./pages/KakaoMapTest";
 import UseSearch from "./pages/useSearch";
-
+import Mypage from "./pages/Mypage";
 
 function App() {
     const [userData, setUserData] = useState(() => {
         const storedData = localStorage.getItem('userData');
-        return storedData ? JSON.parse(storedData) : { useremail: '', role: '', allergies: [], name: '' };
+        return storedData ? JSON.parse(storedData) : { useremail: '', role: '', allergies: [], name: '' , age: ''};
     });
 
 
     const handleLogout = () => {
         localStorage.removeItem('userData');
-        setUserData({ useremail: '', role: '', allergies: [], name: '' });
+        setUserData({ useremail: '', role: '', allergies: [], name: '', age: '' });
     };
 
     useEffect(() => {
@@ -35,13 +35,12 @@ function App() {
             <Routes>
                 <Route path="/login" element={<Login setUserData={setUserData} />} />
                 <Route path="/join" element={<Join />} />
-                {/*<Route path="/map" element={<Map />} />*/}
-                <Route path="/recipe" element={<Recipe />} />
+                <Route path="/recipe" element={<Recipe user={userData} setUserData={setUserData} onLogout={handleLogout}/>} />
                 <Route path="/UseSearch" element={<UseSearch />} />
-                <Route path="/search" element={<Search />} />
-                <Route path="/MapTest" element={<MapTest />} />
-                {/*<Route path="/mapc" element={<MapComponent />} />*/}
-                <Route path="/rlocation" element={<RestaurantLocation />} />
+                <Route path="/search" element={<Search user={userData}  onLogout={handleLogout}/> } />
+                <Route path="/MapTest" element={<MapTest user={userData} onLogout={handleLogout}/>} />
+                <Route path='/Mypage' element={<Mypage user={userData} setUserData={setUserData}  onLogout={handleLogout} />} />
+                <Route path="/rlocation" element={<RestaurantLocation user={userData} setUserData={setUserData} onLogout={handleLogout}/>} />
                 <Route path="/menuList" element={<MenuList userData={userData} />} />
                 <Route path="/" element={<Main user={userData} onLogout={handleLogout} />} />
             </Routes>

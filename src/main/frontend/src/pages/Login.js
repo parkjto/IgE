@@ -60,7 +60,8 @@ function Login({ setUserData }) {
                     useremail: response.data.useremail,
                     role: response.data.role,
                     allergies: response.data.allergies,
-                    name: response.data.name
+                    name: response.data.name,
+                    age : response.data.age
                 });
                 navigate('/'); // 로그인 성공 시 메인 페이지로 이동
             }

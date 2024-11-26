@@ -3,8 +3,9 @@ import styles from "./Search.module.css";
 import useCurrentLocation from "./useCurrentLocation";
 import useSearch from "./useSearch";
 import KakaoMapTest from "./KakaoMapTest";
+import Header from "./Header";
 
-const Search = () => {
+const Search = ({user, onLogout}) => {
     const [query, setQuery] = useState("");
     const { userPosition, error: locationError } = useCurrentLocation();
     const {
@@ -17,7 +18,10 @@ const Search = () => {
     } = useSearch(query, userPosition);
 
     return (
+        <>
+        <Header user={user} onLogout={onLogout} />
         <div className={styles.container}>
+
             <h1 className={styles.title}>근처 식당 검색</h1>
 
             <div className={styles.searchContainer}>
@@ -68,6 +72,7 @@ const Search = () => {
                 ))}
             </div>
         </div>
+        </>
     );
 };
 

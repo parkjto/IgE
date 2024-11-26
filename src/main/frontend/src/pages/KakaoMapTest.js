@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible }) => {
     const mapRef = useRef(null);
     const [map, setMap] = useState(null);
-    const [currentCircle, setCurrentCircle] = useState(null);  // 현재 위치 원
+    const [currentMarker, setCurrentMarker] = useState(null);  // 현재 위치 마커
 
     const [restaurantMarkers, setRestaurantMarkers] = useState([]);  // 클릭된 식당 마커들
 
@@ -26,20 +26,15 @@ const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible }) => {
                     const kakaoMap = new window.kakao.maps.Map(container, options);
                     setMap(kakaoMap);
 
-                    // 현재 위치 원 (빨간 원) 생성
-                    const currentPositionCircle = new window.kakao.maps.Circle({
+                    // 현재 위치 기본 마커 생성
+                    const currentPositionMarker = new window.kakao.maps.Marker({
                         map: kakaoMap,
-                        center: new window.kakao.maps.LatLng(userPosition.latitude, userPosition.longitude),
-                        radius: 50, // 원의 반지름 (픽셀 단위)
-                        strokeWeight: 2, // 선 두께
-                        strokeColor: '#FF0000', // 선 색상 (빨간색)
-                        strokeOpacity: 1, // 선 불투명도
-                        fillColor: '#FF0000', // 채우기 색상 (빨간색)
-                        fillOpacity: 0.4, // 채우기 불투명도
+                        position: new window.kakao.maps.LatLng(userPosition.latitude, userPosition.longitude),
+                        title: "현재 위치",
                     });
 
-                    // 상태에 현재 위치 원 저장
-                    setCurrentCircle(currentPositionCircle);
+                    // 상태에 현재 위치 마커 저장
+                    setCurrentMarker(currentPositionMarker);
                 });
             };
         }

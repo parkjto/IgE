@@ -7,9 +7,13 @@ const Main = ({ user, onLogout }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        // user.name이 존재하면 로그인 상태로 설정
-        setIsLoggedIn(!!user.name);
-    }, [user.name]);
+        console.log("Main 컴포넌트에서 전달받은 user 데이터:", user);
+        if (user && user.name) {
+            setIsLoggedIn(true);
+        } else {
+            setIsLoggedIn(false);
+        }
+    }, [user]);
 
     return (
         <div>

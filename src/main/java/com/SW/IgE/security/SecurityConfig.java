@@ -1,4 +1,4 @@
-package com.SW.IgE;
+package com.SW.IgE.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,12 +14,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
-@EnableWebSecurity // Spring Security 웹 보안 활성화
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // 비밀번호 암호화를 위해 BCryptPasswordEncoder를 빈으로 등록
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -36,7 +36,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // CSRF, 권한 부여, 로그인, 로그아웃, 세션 관리를 설정하는 메서드 호출
         configureCsrf(http);
         configureAuthorization(http);
         configureFormLogin(http);
@@ -46,24 +45,22 @@ public class SecurityConfig {
         // CORS 필터를 인증 필터 앞에 추가
         http.addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        return http.build(); // 보안 필터 체인 반환
+        return http.build();
     }
 
     private void configureCsrf(HttpSecurity http) throws Exception {
-        // CSRF 보호 설정
         http.csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringRequestMatchers("/loginProc", "/logout", "/join", "/Main","/login")); // 특정 엔드포인트에서 CSRF 보호 비활성화
+                .ignoringRequestMatchers("/loginProc", "/logout", "/join", "/Main", "/login", "/Mypage"));
     }
 
     private void configureAuthorization(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/login", "/loginProc", "/join","/error").permitAll()
+                .requestMatchers("/login", "/loginProc", "/join", "/error", "/Mypage").permitAll()
                 .requestMatchers("/user/**").authenticated()
                 .anyRequest().permitAll());
     }
-
 
     private void configureFormLogin(HttpSecurity http) throws Exception {
         http.formLogin(formLogin -> formLogin
@@ -88,7 +85,7 @@ public class SecurityConfig {
     }
 
     private void configureSessionManagement(HttpSecurity http) throws Exception {
-        http.sessionManagement(sessionManagement ->
-                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // 상태 유지하지 않음
+        http.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // 상태 유지하지 않음
     }
 }
+

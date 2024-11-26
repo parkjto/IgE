@@ -23,6 +23,11 @@ const Header = ({ user, onLogout }) => {
         navigate("/"); // 로그아웃 후 메인 페이지로 이동
     };
 
+    const handleMypageClick = () => {
+        onLogout();
+        navigate("/Mypage"); // 로그아웃 후 메인 페이지로 이동
+    };
+
     // 인증 페이지 (로그인 또는 회원가입)인지 확인
     const isAuthPage = location.pathname === "/login" || location.pathname === "/join";
 
@@ -41,9 +46,14 @@ const Header = ({ user, onLogout }) => {
             {!isAuthPage && ( // 인증 페이지가 아닐 때만 버튼 표시
                 <div className={styles.buttonGroup}>
                     {user?.name ? (  // user 객체가 존재할 때만 확인
-                        <button className={`${styles.button} ${styles.loginnout}`} onClick={handleLogoutClick}>
-                            로그아웃
-                        </button>
+                        <>
+                            <button className={`${styles.button} ${styles.loginnout}`} onClick={handleLogoutClick}>
+                                로그아웃
+                            </button>
+                            <button className={`${styles.button} ${styles.loginnout}`} onClick={handleMypageClick}>
+                                마이페이지
+                            </button>
+                        </>
                     ) : (
                         <>
                             <button className={`${styles.button} ${styles.loginnout}`} onClick={handleLoginClick}>

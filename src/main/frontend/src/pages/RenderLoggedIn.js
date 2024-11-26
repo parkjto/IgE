@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';  // useNavigate import
 import RandomMenu from "./RandomMenu";
 import InformIgE from "./InformIgE";
 import styles from './RenderLoggedIn.module.css';
-import search from "./Search";
 
 const RenderLoggedIn = ({ user, isLoggedIn }) => {
     const navigate = useNavigate();  // navigate 훅 사용
@@ -16,6 +15,7 @@ const RenderLoggedIn = ({ user, isLoggedIn }) => {
         navigate('/search');
         // navigate('/MapTest');
     };
+
 
     return (
         <div className={styles.Informcontainer}>
