@@ -1,5 +1,6 @@
 package com.SW.IgE.service;
 
+import com.SW.IgE.DTO.UserUpdateDTO;
 import com.SW.IgE.exception.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,9 +9,11 @@ import com.SW.IgE.entity.User;
 import com.SW.IgE.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @Service
 public class UserService {
 
@@ -56,27 +59,32 @@ public class UserService {
         return userRepository.findUserWithAllDetailsByEmail(useremail).orElse(null);
     }
 
-    public void updateUser(User updatedUser) {
-        // 사용자 정보를 업데이트
-        User existingUser = userRepository.findById(updatedUser.getId()).orElse(null);
-        if (existingUser != null) {
-            // 업데이트된 필드를 반영
-            existingUser.setName(updatedUser.getName());
-            existingUser.setAge(updatedUser.getAge());
-            existingUser.setUser_ige(updatedUser.getUser_ige());
+    public User updateUser(UserUpdateDTO userUpdateDTO) {
+        User existingUser = userRepository.findById(userUpdateDTO.getId())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-            // 비밀번호를 변경할 경우, 새 비밀번호로 업데이트
-            if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                String rawPassword = updatedUser.getPassword();
-                String encPassword = bCryptPasswordEncoder.encode(rawPassword);
-                existingUser.setPassword(encPassword);
+        existingUser.setName(userUpdateDTO.getName());
+        existingUser.setAge(userUpdateDTO.getAge());
+        existingUser.setUser_ige(userUpdateDTO.getAllergies());
+
+        // 비밀번호가 변경되면, 비밀번호 강도 체크 후 업데이트
+        if (userUpdateDTO.getPassword() != null && !userUpdateDTO.getPassword().isEmpty()) {
+            if (userUpdateDTO.getPassword().length() < 2) {
+                throw new RuntimeException("비밀번호는 최소 2자 이상이어야 합니다.");
+
             }
-
-            userRepository.save(existingUser);
-        } else {
-            throw new UserNotFoundException("사용자를 찾을 수 없습니다.");
+            String encPassword = bCryptPasswordEncoder.encode(userUpdateDTO.getPassword());
+            existingUser.setPassword(encPassword);
         }
+
+        existingUser.setName(userUpdateDTO.getName());
+        existingUser.setUser_ige(userUpdateDTO.getAllergies() != null ? userUpdateDTO.getAllergies() : null);
+
+        return userRepository.save(existingUser);
     }
+
+
+
 
 
 

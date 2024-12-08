@@ -2,11 +2,24 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ImageChange from "./ImageChange";
 import style from './RandomInform.module.css';
+import {useNavigate} from "react-router-dom";
 
 const RandomMenu = () => {
     const [menu, setMenu] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const navigate = useNavigate();  // navigate 훅 사용
+
+    const handleRecipeClick = () => {
+        navigate('/recipe');  // '레시피' 버튼 클릭 시 '/recipe' 경로로 이동
+    };
+
+    const handleNearMap = () => {
+        navigate('/search',{ state: { menuName: menu.menu_name } });
+        // navigate('/MapTest');
+    };
+
 
     const fetchRandomMenu = () => {
         axios.get('http://localhost:8081/api/menus/random')
@@ -51,10 +64,17 @@ const RandomMenu = () => {
     }
 
     return (
-        <div className={style.container}>
-            <p className={style.text} onClick={handleMenuClick}>
-                {menu.menu_name || "메뉴를 불러올 수 없습니다"}
-            </p>
+        <div>
+            <div className={style.container}>
+                <p className={style.text} onClick={handleMenuClick}>
+                    {menu.menu_name || "메뉴를 불러올 수 없습니다"}
+                </p>
+
+            </div>
+            <div className={style.abutton}>
+                <button onClick={handleRecipeClick}>레시피</button>
+                <button onClick={handleNearMap}>주변 식당</button>
+            </div>
         </div>
     );
 };

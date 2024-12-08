@@ -1,108 +1,121 @@
 .container {
-    width: 100%;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    font-family: 'Arial', sans-serif;
+}
+
+.content {
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
 }
 
 .title {
-    font-size: 2rem;
-    margin-bottom: 20px;
+    font-size: 2.5rem;
+    color: #333;
     text-align: center;
+    margin-bottom: 2rem;
+}
+
+.infoCard {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
 }
 
 .inputGroup {
-    margin-bottom: 15px;
+    margin-bottom: 1.5rem;
 }
 
-.inputGroup label {
-    font-weight: bold;
+.label {
     display: block;
-    margin-bottom: 5px;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #555;
 }
 
 .inputField {
     width: 100%;
-    padding: 8px;
-    font-size: 1rem;
+    padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: 4px;
+    font-size: 1rem;
 }
 
-.inputField[type="number"] {
-    width: 40%;
+.info {
+    display: block;
+    padding: 0.75rem;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    font-size: 1rem;
 }
 
-.inputField:focus {
-    border-color: #0056b3;
-    outline: none;
+.allergySelection {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(700px, 1fr));
+    gap: 0.5rem;
+}
+
+.allergyOption {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.allergyCheckbox {
+    margin-right: 0.5rem;
 }
 
 .buttonGroup {
     display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
 }
 
 .button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
+    padding: 0.75rem 1.5rem;
     border: none;
     border-radius: 4px;
-    cursor: pointer;
     font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.button:hover {
-    background-color: #0056b3;
+.editButton {
+    background-color:  #4c4cff;
+    color: white;
+}
+
+.editButton:hover {
+    background-color: #3838fb;
+}
+
+.saveButton {
+    background-color: #492dac;
+    color: white;
+}
+
+.saveButton:hover {
+    background-color: #3838fb;
 }
 
 .cancelButton {
-    background-color: #f44336;
+    background-color: #1818cd;
+    color: white;
 }
 
 .cancelButton:hover {
-    background-color: #d32f2f;
+    background-color: #3838fb;
 }
 
-.allergySelection {
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #f9f9f9;
-    border-radius: 4px;
-}
-
-.allergyTitle {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-}
-
-.allergyOption {
-    display: block;
-    margin-bottom: 8px;
-}
-
-.allergyCheckbox {
-    margin-right: 10px;
-}
-
-.checkboxContainer {
-    margin-top: 15px;
-}
-
-.checkboxLabel {
-    font-size: 1rem;
-    display: inline-block;
-    margin-right: 10px;
-}
-
-.errorMessage {
-    color: red;
-    font-size: 1rem;
-    margin-bottom: 15px;
+.messageBox {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
     text-align: center;
+    margin-top: 2rem;
 }
+

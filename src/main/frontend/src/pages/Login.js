@@ -57,6 +57,7 @@ function Login({ setUserData }) {
                 alert('로그인 성공!');
                 localStorage.setItem('userData', JSON.stringify(response.data));
                 setUserData({
+                    id : response.data.id,
                     useremail: response.data.useremail,
                     role: response.data.role,
                     allergies: response.data.allergies,

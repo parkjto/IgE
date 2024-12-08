@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import styles from "./Search.module.css";
 import useCurrentLocation from "./useCurrentLocation";
 import useSearch from "./useSearch";
 import KakaoMapTest from "./KakaoMapTest";
 import Header from "./Header";
+import { useLocation } from "react-router-dom";
+// import RandomMenu from "./RandomMenu"; // RandomMenu 컴포넌트 추가
+
 
 const Search = ({user, onLogout}) => {
     const [query, setQuery] = useState("");
+    const location = useLocation(); // location 객체 가져오기
+
+    // RandomMenu에서 전달된 menu_name을 query에 초기값으로 설정
+    useEffect(() => {
+        if (location.state?.menuName) {
+            setQuery(location.state.menuName);
+        }
+    }, [location.state]);
+
     const { userPosition, error: locationError } = useCurrentLocation();
     const {
         results,
@@ -16,6 +28,10 @@ const Search = ({user, onLogout}) => {
         setClickedRestaurant,
         handleSearch,
     } = useSearch(query, userPosition);
+
+    // const handleRandomMenuSelect = (menuName) => {
+    //     setQuery(menuName);
+    // };
 
     return (
         <>
@@ -27,7 +43,7 @@ const Search = ({user, onLogout}) => {
             <div className={styles.searchContainer}>
                 <input
                     type="text"
-                    value={query}
+                    value={query} // 전달받은 값을 검색창에 반영
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="식당 이름이나 메뉴를 입력하세요"
                     className={styles.searchInput}

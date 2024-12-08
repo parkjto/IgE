@@ -24,7 +24,10 @@ const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible }) => {
                     };
 
                     const kakaoMap = new window.kakao.maps.Map(container, options);
+
+
                     setMap(kakaoMap);
+
 
                     // 현재 위치 기본 마커 생성
                     const currentPositionMarker = new window.kakao.maps.Marker({
@@ -35,6 +38,10 @@ const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible }) => {
 
                     // 상태에 현재 위치 마커 저장
                     setCurrentMarker(currentPositionMarker);
+
+                    // 줌 컨트롤 추가
+                    const zoomControl = new window.kakao.maps.ZoomControl();
+                    kakaoMap.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
                 });
             };
         }

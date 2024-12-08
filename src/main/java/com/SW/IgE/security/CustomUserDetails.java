@@ -11,18 +11,28 @@ import java.util.Set;
 
 public class CustomUserDetails implements UserDetails {
 
+    private final Integer id; // id를 Integer로 변경
     private final String email;
     private final String password;
     private final Set<GrantedAuthority> authorities;
     private final Integer age;
 
-    // 사용자 객체를 받아서 필요한 정보만 저장
+    // User 객체만 받아 필요한 정보를 설정하는 생성자
     public CustomUserDetails(User user) {
+        this.id = user.getId(); // id 저장
         this.email = user.getUseremail();
         this.password = user.getPassword();
         this.authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
-        this.age = user.getAge(); // 나이 추가
+        this.age = user.getAge(); // age 저장
+    }
+
+    public Integer getId() { // id Getter
+        return id;
+    }
+
+    public Integer getAge() { // age Getter
+        return age;
     }
 
     @Override
@@ -38,11 +48,6 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return email;
-    }
-
-
-    public Integer getAge() {
-        return age;
     }
 
     @Override

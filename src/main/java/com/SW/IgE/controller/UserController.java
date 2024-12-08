@@ -1,11 +1,14 @@
 package com.SW.IgE.controller;
 
+import com.SW.IgE.DTO.UserUpdateDTO;
 import com.SW.IgE.entity.User;
+import com.SW.IgE.repository.UserRepository;
 import com.SW.IgE.service.UserDetailsServiceImpl;
 import com.SW.IgE.service.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,6 +31,9 @@ public class UserController {
     private final UserService userService;
     private final UserDetailsServiceImpl userDetailsService;
     private final BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
+
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserService userService, UserDetailsServiceImpl userDetailsService, BCryptPasswordEncoder passwordEncoder) {
@@ -63,6 +69,7 @@ public class UserController {
                 List<String> allergies = userService.getUserAllergies(user.getId());
 
                 Map<String, Object> userInfo = new HashMap<>();
+                userInfo.put("id", user.getId());
                 userInfo.put("useremail", userDetails.getUsername());
                 userInfo.put("role", userDetails.getAuthorities().toString());
                 userInfo.put("allergies", allergies);
@@ -90,30 +97,54 @@ public class UserController {
 
     @GetMapping("/userInfo")
     public ResponseEntity<Map<String, Object>> getUserInfo() {
-        // 현재 인증된 사용자의 이메일 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserEmail = authentication.getName();
 
-        // 사용자 정보 가져오기
+        if (currentUserEmail == null || currentUserEmail.isEmpty()) {
+            logger.warn("사용자 인증 실패 - 사용자 없음");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증된 사용자가 아닙니다."));
+        }
+
         User user = userService.getUserInfo(currentUserEmail);
         if (user == null) {
             logger.warn("사용자 정보 조회 실패 - 사용자 없음: {}", currentUserEmail);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "사용자를 찾을 수 없습니다."));
         }
 
-        // JSON 응답 데이터 생성
         Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("id", user.getId());
         userInfo.put("name", user.getName());
         userInfo.put("useremail", user.getUseremail());
         userInfo.put("age", user.getAge());
-        userInfo.put("role", user.getRole().toString()); // 문자열로 변환하여 role 반환
-        userInfo.put("user_ige", user.getUser_ige()); // 알레르기 목록
+        userInfo.put("role", user.getRole().toString());
+        userInfo.put("user_ige", user.getUser_ige());
 
         logger.info("사용자 정보 조회 성공: {}", currentUserEmail);
         return ResponseEntity.ok(userInfo);
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUser(@RequestBody UserUpdateDTO userUpdateDTO) {
+        if (userUpdateDTO.getId() == null) {
+            return ResponseEntity.badRequest().body("사용자 ID는 필수입니다.");
+        }
 
+        try {
+            // 비밀번호가 변경된 경우
+            if (userUpdateDTO.getPassword() != null && !userUpdateDTO.getPassword().isEmpty()) {
+                // 비밀번호 강도 체크 로직 추가 가능 (예: 길이, 특수문자 포함 등)
+                if (userUpdateDTO.getPassword().length() < 2) {
+                    return ResponseEntity.badRequest().body("비밀번호는 최소 2자 이상이어야 합니다.");
+                }
+            }
+
+            User updatedUser = userService.updateUser(userUpdateDTO);
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e) {
+            logger.error("사용자 정보 업데이트 중 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("업데이트 실패: " + e.getMessage());
+        }
+    }
 
 
     @GetMapping("/admin")
@@ -132,63 +163,4 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
-
-    @PostMapping("/updateUser")
-    public ResponseEntity<Map<String, Object>> updateUser(@Valid @RequestBody Map<String, Object> updatedData) {
-        // 현재 인증된 사용자의 이메일 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserEmail = authentication.getName();
-
-        // 현재 사용자의 정보를 가져오기
-        User currentUser = userService.getUserInfo(currentUserEmail);
-        if (currentUser == null) {
-            logger.warn("사용자 정보 수정 실패 - 사용자 없음: {}", currentUserEmail);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "사용자를 찾을 수 없습니다."));
-        }
-
-        // 수정할 데이터 반영
-        if (updatedData.containsKey("name")) {
-            currentUser.setName((String) updatedData.get("name"));
-        }
-        if (updatedData.containsKey("age")) {
-            Integer age = (Integer) updatedData.get("age");
-            if (age != null && age > 0) {
-                currentUser.setAge(age);
-            }
-        }
-        if (updatedData.containsKey("user_ige")) {
-            List<String> allergies = (List<String>) updatedData.get("user_ige");
-            if (allergies != null) {
-                currentUser.setUser_ige(allergies);
-            }
-        }
-
-        // 사용자 정보 업데이트
-        userService.updateUser(currentUser);
-
-        logger.info("사용자 정보 수정 성공: {}", currentUserEmail);
-
-        // JSON 응답 데이터 생성
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "사용자 정보가 성공적으로 수정되었습니다.");
-        response.put("user", currentUser);
-
-        return ResponseEntity.ok(response);
-    }
-
-
-
-    @GetMapping("/user/details")
-    public ResponseEntity<User> getUserDetails(@RequestParam String useremail) {
-        User user = userService.getUserWithAllDetails(useremail);
-        if (user != null) {
-            logger.info("사용자 상세 정보 조회 성공: {}", useremail);
-            return ResponseEntity.ok(user);
-        } else {
-            logger.warn("사용자 상세 정보 조회 실패 - 사용자 없음: {}", useremail);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-
-
 }

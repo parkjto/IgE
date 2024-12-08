@@ -2,8 +2,9 @@
 
     width: 700px;
     height: 500px;
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    justify-content: center;
     text-align: center;
     padding: 10px 20px;
     /*background-color: #f8f9fd;*/
