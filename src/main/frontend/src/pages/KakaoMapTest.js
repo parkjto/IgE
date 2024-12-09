@@ -3,15 +3,33 @@ import React, { useEffect, useRef, useState } from "react";
 const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible }) => {
     const mapRef = useRef(null);
     const [map, setMap] = useState(null);
-    const [currentMarker, setCurrentMarker] = useState(null);  // 현재 위치 마커
+    const [currentMarker, setCurrentMarker] = useState(null); // 현재 위치 마커
+    const [restaurantMarkers, setRestaurantMarkers] = useState([]); // 클릭된 식당 마커들
+    const [regionName, setRegionName] = useState(""); // 행정구역 이름 저장
 
-    const [restaurantMarkers, setRestaurantMarkers] = useState([]);  // 클릭된 식당 마커들
+    // 행정구역 이름 가져오기 함수
+    const getRegionName = (latitude, longitude) => {
+        const kakao = window.kakao; // Kakao API 로드
+        const geocoder = new kakao.maps.services.Geocoder();
+
+        geocoder.coord2RegionCode(longitude, latitude, (result, status) => {
+            if (status === kakao.maps.services.Status.OK) {
+                const region = result.find((item) => item.region_type === "H"); // 'H': 행정동
+                if (region) {
+                    setRegionName(region.address_name); // 행정구역 이름 저장
+                    console.log("현재 위치의 행정구역 이름:", region.address_name);
+                }
+            } else {
+                console.error("Geocoding 실패:", status);
+            }
+        });
+    };
 
     // 지도 초기화
     useEffect(() => {
         if (userPosition && !map) {
             const script = document.createElement("script");
-            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=3abe3146cdb7a57e6e03b6ca6e652183&autoload=false`;
+            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=3abe3146cdb7a57e6e03b6ca6e652183&libraries=services&autoload=false`;
             script.async = true;
             document.body.appendChild(script);
 
@@ -24,10 +42,7 @@ const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible }) => {
                     };
 
                     const kakaoMap = new window.kakao.maps.Map(container, options);
-
-
                     setMap(kakaoMap);
-
 
                     // 현재 위치 기본 마커 생성
                     const currentPositionMarker = new window.kakao.maps.Marker({
@@ -36,12 +51,14 @@ const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible }) => {
                         title: "현재 위치",
                     });
 
-                    // 상태에 현재 위치 마커 저장
                     setCurrentMarker(currentPositionMarker);
 
                     // 줌 컨트롤 추가
                     const zoomControl = new window.kakao.maps.ZoomControl();
                     kakaoMap.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
+
+                    // 지도 초기화 완료 후 행정구역 이름 가져오기
+                    getRegionName(userPosition.latitude, userPosition.longitude);
                 });
             };
         }
@@ -90,7 +107,12 @@ const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible }) => {
         }
     }, [isMapVisible, map, userPosition]);
 
-    return <div id="map" style={{ width: "100%", height: "400px" }}></div>;
+    return (
+        <div>
+            <div id="map" style={{ width: "100%", height: "400px" }}></div>
+            <p>현재 위치: {regionName}</p>
+        </div>
+    );
 };
 
 export default KakaoMapTest;

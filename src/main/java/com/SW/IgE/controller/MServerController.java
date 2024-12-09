@@ -57,7 +57,8 @@ public class MServerController {
     public List<Map<String, Object>> searchWithDistance(
             @RequestParam("query") String query,
             @RequestParam("userX") double userX,
-            @RequestParam("userY") double userY) {
+            @RequestParam("userY") double userY,
+            @RequestParam(value = "maxDistance", defaultValue = "3") double maxDistance) {
 
         LOGGER.log(Level.INFO, "searchWithDistance called. Query: {0}, User position: ({1}, {2})", new Object[]{query, userX, userY});
 
@@ -69,10 +70,11 @@ public class MServerController {
             LOGGER.log(Level.INFO, "Number of restaurants found: {0}", restaurants.size());
         }
 
-        List<Map<String, Object>> result = naverSearchService.searchRestaurantsWithDistance(restaurants, userX, userY);
+        List<Map<String, String>> result = naverSearchService.searchRestaurants(query);
 
         LOGGER.log(Level.INFO, "Distance calculation completed. Number of results (with distance): {0}", result.size());
 
-        return result;
+        return naverSearchService.searchRestaurantsWithDistance(result, userX, userY, maxDistance);
     }
+
 }

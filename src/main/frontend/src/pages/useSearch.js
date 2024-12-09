@@ -16,7 +16,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
     return parseFloat((R * c).toFixed(2)); // 소수점 2자리까지 반환
 };
 
-const useSearch = (query, userPosition) => {
+const useSearch = (query, userPosition, maxDistance = 3) =>  {
     const [results, setResults] = useState([]);
     const [clickedRestaurant, setClickedRestaurant] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -24,10 +24,12 @@ const useSearch = (query, userPosition) => {
     const [restaurantDistance, setRestaurantDistance] = useState(null);
 
     const handleSearch = async () => {
-        if (!query.trim()) {
-            setError("검색어를 입력해주세요.");
+        if (!query) return;
+        if (!userPosition) {
+            setError("위치 정보를 먼저 확인해주세요.");
             return;
         }
+
 
         setLoading(true);
         setError("");

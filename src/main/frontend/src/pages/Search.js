@@ -22,12 +22,13 @@ const Search = ({user, onLogout}) => {
     const { userPosition, error: locationError } = useCurrentLocation();
     const {
         results,
+        setResults,
         clickedRestaurant,
         loading,
         error: searchError,
         setClickedRestaurant,
         handleSearch,
-    } = useSearch(query, userPosition);
+    } = useSearch(query, userPosition, 3);
 
     // const handleRandomMenuSelect = (menuName) => {
     //     setQuery(menuName);
@@ -39,6 +40,15 @@ const Search = ({user, onLogout}) => {
         <div className={styles.container}>
 
             <h1 className={styles.title}>근처 식당 검색</h1>
+            <p style={{color: 'rgba(128, 128, 128, 0.7)', fontSize: '12px'}}>
+                검색어를 조금 더 간단히 수정해 보세요!
+            </p>
+            <p style={{color: 'rgba(128, 128, 128, 0.7)', fontSize: '14px', marginTop : '10px'}}>
+               ( 예시: "냉이순두부찌개" → "순두부찌개")
+            </p>
+            <p style={{color: 'rgba(128, 128, 128, 0.7)', fontSize: '12px', marginTop : '10px', marginBottom : '10px'}}>
+                이런 식으로 수정하면 더 정확한 검색 결과를 얻을 수 있어요.
+            </p>
 
             <div className={styles.searchContainer}>
                 <input

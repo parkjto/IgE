@@ -119,22 +119,31 @@ public class NaverSearchService {
      * @param userY      사용자 위치의 Y 좌표 (위도)
      * @return 거리 정보가 추가된 식당 목록
      */
-    public List<Map<String, Object>> searchRestaurantsWithDistance(List<Map<String, String>> restaurants, double userX, double userY) {
+    public List<Map<String, Object>> searchRestaurantsWithDistance(
+            List<Map<String, String>> restaurants,
+            double userX,
+            double userY,
+            double maxDistance) { // 최대 거리 추가
+
         List<Map<String, Object>> restaurantsWithDistance = new ArrayList<>();
 
         for (Map<String, String> restaurant : restaurants) {
             double restaurantX = Double.parseDouble(restaurant.get("longitude"));
             double restaurantY = Double.parseDouble(restaurant.get("latitude"));
 
-            // 두 좌표 간의 거리 계산
             double distance = calculateDistance(userY, userX, restaurantY, restaurantX);
 
-            // 식당 정보와 거리 추가
-            Map<String, Object> restaurantWithDistance = new HashMap<>(restaurant);
-            restaurantWithDistance.put("distance", String.format("%.2f", distance)); // 소수점 2자리로 거리 추가
-
-            restaurantsWithDistance.add(restaurantWithDistance);
+            // 최대 거리 내의 식당만 추가
+            if (distance <= maxDistance) {
+                Map<String, Object> restaurantWithDistance = new HashMap<>(restaurant);
+                restaurantWithDistance.put("distance", distance);
+                restaurantsWithDistance.add(restaurantWithDistance);
+            }
         }
+
+        // 거리순으로 정렬
+        Collections.sort(restaurantsWithDistance,
+                Comparator.comparingDouble(r -> (double) r.get("distance")));
 
         return restaurantsWithDistance;
     }
