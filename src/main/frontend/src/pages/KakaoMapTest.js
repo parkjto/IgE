@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible }) => {
+const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible, onRegionChange }) => {
     const mapRef = useRef(null);
     const [map, setMap] = useState(null);
     const [currentMarker, setCurrentMarker] = useState(null); // 현재 위치 마커
@@ -16,13 +16,34 @@ const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible }) => {
             if (status === kakao.maps.services.Status.OK) {
                 const region = result.find((item) => item.region_type === "H"); // 'H': 행정동
                 if (region) {
-                    setRegionName(region.address_name); // 행정구역 이름 저장
-                    console.log("현재 위치의 행정구역 이름:", region.address_name);
+                    const name = region.address_name;
+                    setRegionName(name); // 행정구역 이름 저장
+                    if (onRegionChange) onRegionChange(name); // 부모로 전달
                 }
             } else {
                 console.error("Geocoding 실패:", status);
             }
         });
+    };
+
+    // 커스텀 마커 생성 함수
+    const createCustomMarker = (map, position) => {
+        const markerElement = document.createElement("div");
+        markerElement.style.width = "20px";
+        markerElement.style.height = "20px";
+        markerElement.style.backgroundColor = "#db3434"; // 파란색
+        markerElement.style.borderRadius = "50%"; // 동그라미
+        markerElement.style.boxShadow = "0 2px 6px rgba(0, 0, 0, 0.3)";
+        markerElement.style.border = "2px solid white";
+
+        // Kakao CustomOverlay 사용
+        const overlay = new window.kakao.maps.CustomOverlay({
+            map: map,
+            position: position,
+            content: markerElement,
+        });
+
+        return overlay;
     };
 
     // 지도 초기화
@@ -44,14 +65,10 @@ const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible }) => {
                     const kakaoMap = new window.kakao.maps.Map(container, options);
                     setMap(kakaoMap);
 
-                    // 현재 위치 기본 마커 생성
-                    const currentPositionMarker = new window.kakao.maps.Marker({
-                        map: kakaoMap,
-                        position: new window.kakao.maps.LatLng(userPosition.latitude, userPosition.longitude),
-                        title: "현재 위치",
-                    });
-
-                    setCurrentMarker(currentPositionMarker);
+                    // 현재 위치 마커 생성
+                    const currentPosition = new window.kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
+                    const customMarker = createCustomMarker(kakaoMap, currentPosition);
+                    setCurrentMarker(customMarker);
 
                     // 줌 컨트롤 추가
                     const zoomControl = new window.kakao.maps.ZoomControl();
