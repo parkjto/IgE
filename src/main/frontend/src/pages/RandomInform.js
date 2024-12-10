@@ -72,7 +72,7 @@ const RandomMenu = () => {
 
             </div>
             <div className={style.abutton}>
-                <button onClick={handleRecipeClick}>레시피</button>
+                {/*<button onClick={handleRecipeClick}>레시피</button>*/}
                 <button onClick={handleNearMap}>주변 식당</button>
             </div>
         </div>

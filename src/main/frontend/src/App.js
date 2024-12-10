@@ -10,6 +10,7 @@ import Search from "./pages/Search";
 import MapTest from "./pages/KakaoMapTest";
 import UseSearch from "./pages/useSearch";
 import Mypage from "./pages/Mypage";
+import Findpassword from "./pages/FindPass";
 
 import FindPass from "./pages/FindPass";
 
@@ -62,7 +63,7 @@ function App() {
             <Routes>
                 <Route path="/login" element={<Login setUserData={setUserData} />} />
                 <Route path="/join" element={<Join />} />
-                <Route path="/findPass" element={<FindPass />} />
+                <Route path="/Findpassword" element={<FindPass />} />
                 <Route path="/recipe" element={<Recipe user={userData} setUserData={setUserData} onLogout={handleLogout}/>} />
                 <Route path="/UseSearch" element={<UseSearch />} />
                 <Route path="/search" element={<Search user={userData} onLogout={handleLogout}/>} />
