@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 //public interface MenuRepository extends JpaRepository<Menu, Integer> {
 //
@@ -27,4 +29,7 @@ public interface MenuRepository extends JpaRepository<Menu, Integer> {
     // 특정 ID에 해당하는 메뉴 조회
     @Query("SELECT m FROM Menu m WHERE m.id = :id")
     Menu findMenuById(@Param("id") Integer id);  // @Param("id")를 추가하여 파라미터 이름을 명시
+
+    @Query("SELECT m FROM Menu m WHERE m.food_type IN :foodTypes ORDER BY RAND() LIMIT 1")
+    Menu findRandomMenuByFoodTypes(@Param("foodTypes") List<String> foodTypes);
 }

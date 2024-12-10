@@ -8,6 +8,9 @@ const RandomMenu = () => {
     const [menu, setMenu] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedCategory, setSelectedCategory] = useState("전체");
+
+    const categories = ["전체", "한식", "양식", "간식", "기타", "음료"];
 
     const navigate = useNavigate();  // navigate 훅 사용
 
@@ -22,9 +25,12 @@ const RandomMenu = () => {
 
 
     const fetchRandomMenu = () => {
-        axios.get('http://localhost:8081/api/menus/random')
+        const endpoint = selectedCategory === "전체" 
+            ? 'http://localhost:8081/api/menus/random'
+            : `http://localhost:8081/api/menus/random/${selectedCategory}`;
+
+        axios.get(endpoint)
             .then(response => {
-                console.log(response.data);
                 if (response.data && response.data.menu_name) {
                     setMenu(response.data);
                 } else {
@@ -65,11 +71,21 @@ const RandomMenu = () => {
 
     return (
         <div>
+            <div className={style.categoryContainer}>
+                {categories.map(category => (
+                    <button
+                        key={category}
+                        className={`${style.categoryButton} ${selectedCategory === category ? style.selected : ''}`}
+                        onClick={() => setSelectedCategory(category)}
+                    >
+                        {category}
+                    </button>
+                ))}
+            </div>
             <div className={style.container}>
                 <p className={style.text} onClick={handleMenuClick}>
                     {menu.menu_name || "메뉴를 불러올 수 없습니다"}
                 </p>
-
             </div>
             <div className={style.abutton}>
                 {/*<button onClick={handleRecipeClick}>레시피</button>*/}

@@ -46,8 +46,6 @@ dependencies {
 	// 테스트 의존성
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-	// Logback 의존성 추가 (SLF4J 로깅 구현체)
 }
 
 // -parameters 플래그 추가

@@ -139,18 +139,33 @@ function Join() {
                         {hasAllergy && (
                             <div className={styles.allergySelection}>
                                 <h4 className={styles.allergyTitle}>알레르기 선택</h4>
-                                {['계란', '콩', '우유', '밀', '땅콩', '생선', '갑각류', '견과류'].map(ige => (
-                                    <label className={styles.allergyOption} key={ige}>
-                                        <input
-                                            type="checkbox"
-                                            className={styles.allergyCheckbox}
-                                            value={ige}
-                                            checked={user.user_ige.includes(ige)} // 선택된 알레르기 유지
-                                            onChange={handleAllergyChange}
-                                        />
-                                        {ige}
-                                    </label>
-                                ))}
+                                <table className={styles.allergyTable}>
+                                    <tbody>
+                                    {[
+                                        ["계란", "콩"],
+                                        ["우유", "밀"],
+                                        ["땅콩", "생선"],
+                                        ["갑각류", "견과류"]
+                                    ].map((row, rowIndex) => (
+                                        <tr key={rowIndex}>
+                                            {row.map((allergy) => (
+                                                <td key={allergy} className={styles.allergyCell}>
+                                                    <label className={styles.allergyOption}>
+                                                        <input
+                                                            className={styles.allergyCheckbox}
+                                                            type="checkbox"
+                                                            value={allergy}
+                                                            checked={user.user_ige.includes(allergy)}
+                                                            onChange={handleAllergyChange}
+                                                        />
+                                                        {allergy}
+                                                    </label>
+                                                </td>
+                                            ))}
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
                             </div>
                         )}
                     </div>

@@ -29,6 +29,17 @@ public class MenuController {
             return null;  // 예외가 발생한 경우 null을 반환하거나, 적절한 오류 메시지 반환
         }
     }
+
+    @GetMapping("/random/{category}")
+    public Menu getRandomMenuByCategory(@PathVariable String category) {
+        logger.info("Fetching random menu for category: {}", category);
+        try {
+            return menuService.getRandomMenuByCategory(category);
+        } catch (IllegalStateException e) {
+            logger.error("Error fetching random menu for category {}: {}", category, e.getMessage());
+            return null;
+        }
+    }
 }
 
 

@@ -41,3 +41,29 @@
     background-color: #3a3afc; /* 마우스를 올렸을 때 배경색 */
     color: #f0f0f0; /* 선택 사항: 텍스트 색 변경 */
 }
+
+.categoryContainer {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.categoryButton {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.categoryButton.selected {
+    background: #4c4cff;
+    color: white;
+    border-color: #4c4cff;
+}
+
+.categoryButton:hover {
+    background: #f0f0ff;
+}

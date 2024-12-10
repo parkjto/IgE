@@ -6,6 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Service
 public class MenuService {
 
@@ -42,5 +45,30 @@ public class MenuService {
         return randomMenu;
     }
 
+    public Menu getRandomMenuByCategory(String category) {
+        List<String> foodTypes;
+        
+        switch (category) {
+            case "한식":
+                foodTypes = Arrays.asList("밑반찬", "밥/죽/떡", "메인반찬", "찌개", "국/탕", "김치/젓갈/장류");
+                break;
+            case "양식":
+                foodTypes = Arrays.asList("양식", "스프");
+                break;
+            case "간식":
+                foodTypes = Arrays.asList("디저트", "빵", "과자");
+                break;
+            case "음료":
+                foodTypes = Arrays.asList("차/음료/술");
+                break;
+            case "기타":
+                foodTypes = Arrays.asList("양념/소스/잼", "퓨전");
+                break;
+            default:
+                return getRandomMenu(); // 전체 카테고리에서 랜덤 선택
+        }
+        
+        return menuRepository.findRandomMenuByFoodTypes(foodTypes);
+    }
 
 }
