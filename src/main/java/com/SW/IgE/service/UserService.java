@@ -4,6 +4,7 @@ import com.SW.IgE.DTO.UserUpdateDTO;
 import com.SW.IgE.exception.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.SW.IgE.entity.User;
 import com.SW.IgE.repository.UserRepository;
@@ -20,7 +21,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-
 
     public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
@@ -87,6 +87,35 @@ public class UserService {
         logger.info("[Service] 사용자 정보 저장 완료 - ID: {}", savedUser.getId());
         
         return savedUser;
+    }
+
+    public String resetPassword(String useremail, String name, int age, List<String> allergies, String newPassword) {
+        logger.info("[ResetPassword] 비밀번호 재설정 시도 - 이메일: {}", useremail);
+        
+        User user = userRepository.findByUseremail(useremail)
+                .orElseThrow(() -> {
+                    logger.error("[ResetPassword] 사용자를 찾을 수 없음 - 이메일: {}", useremail);
+                    return new UserNotFoundException("사용자를 찾을 수 없습니다.");
+                });
+                
+        // 사용자 정보 검증
+        if (!user.getName().equals(name) || !user.getAge().equals(age)) {
+            logger.error("[ResetPassword] 사용자 정보 불일치 - 이름/나이 불일치");
+            throw new UserNotFoundException("입력하신 정보와 일치하는 사용자가 없습니다.");
+        }
+        
+        // 알레르기 정보 검증
+        if (!user.getUser_ige().containsAll(allergies) || !allergies.containsAll(user.getUser_ige())) {
+            logger.error("[ResetPassword] 알레르기 정보 불일치");
+            throw new UserNotFoundException("알레르기 정보가 일치하지 않습니다.");
+        }
+        
+        // 새 비밀번호 설정
+        user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        userRepository.save(user);
+        logger.info("[ResetPassword] 비밀번호 재설정 완료");
+        
+        return "비밀번호가 성공적으로 변경되었습니다.";
     }
 
 }

@@ -2,6 +2,7 @@ package com.SW.IgE.controller;
 
 import com.SW.IgE.DTO.UserUpdateDTO;
 import com.SW.IgE.entity.User;
+import com.SW.IgE.exception.UserNotFoundException;
 import com.SW.IgE.repository.UserRepository;
 import com.SW.IgE.service.UserDetailsServiceImpl;
 import com.SW.IgE.service.UserService;
@@ -195,6 +196,36 @@ public class UserController {
             return ResponseEntity.ok(user);
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, Object> request) {
+        logger.info("[ResetPassword] 비밀번호 재설정 요청 시작");
+        
+        try {
+            String useremail = (String) request.get("useremail");
+            String name = (String) request.get("name");
+            String newPassword = (String) request.get("newPassword");
+            Integer age = Integer.parseInt(request.get("age").toString());
+            @SuppressWarnings("unchecked")
+            List<String> allergies = (List<String>) request.get("allergies");
+            
+            if (useremail == null || name == null || newPassword == null || allergies == null) {
+                return ResponseEntity.badRequest().body("모든 필드를 입력해주세요.");
+            }
+            
+            String result = userService.resetPassword(useremail, name, age, allergies, newPassword);
+            return ResponseEntity.ok(result);
+            
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("올바른 나이를 입력해주세요.");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("[ResetPassword] 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("비밀번호 재설정 중 오류가 발생했습니다.");
         }
     }
 }

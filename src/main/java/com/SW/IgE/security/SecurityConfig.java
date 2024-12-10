@@ -57,7 +57,7 @@ public class SecurityConfig {
     private void configureAuthorization(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/login", "/loginProc", "/join", "/error", "/update").permitAll()
+                .requestMatchers("/login", "/loginProc", "/join", "/error", "/update", "/reset-password").permitAll()
                 .requestMatchers("/userInfo", "/Mypage").authenticated()
                 .requestMatchers("/user/**").authenticated()
                 .anyRequest().permitAll());
