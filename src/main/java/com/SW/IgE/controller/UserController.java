@@ -5,12 +5,14 @@ import com.SW.IgE.entity.User;
 import com.SW.IgE.repository.UserRepository;
 import com.SW.IgE.service.UserDetailsServiceImpl;
 import com.SW.IgE.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,9 +21,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -33,7 +37,7 @@ public class UserController {
     private final BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserService userService, UserDetailsServiceImpl userDetailsService, BCryptPasswordEncoder passwordEncoder) {
@@ -42,6 +46,7 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // 회원가입 처리
     @PostMapping("/join")
     public ResponseEntity<String> join(@Valid @RequestBody User user) {
         if (userService.existsByUseremail(user.getUseremail())) {
@@ -53,18 +58,23 @@ public class UserController {
         return ResponseEntity.ok("회원가입이 완료되었습니다.");
     }
 
+    // 로그인 처리
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> loginRequest) {
         String useremail = loginRequest.get("useremail");
         String password = loginRequest.get("password");
 
-        if (useremail == null || useremail.trim().isEmpty() || password == null || password.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("message", "이메일과 비밀번호는 필수 입력입니다."));
-        }
+        logger.info("Login attempt for email: {}", useremail);
 
         try {
             UserDetails userDetails = userDetailsService.loadUserByUsername(useremail);
-            if (passwordEncoder.matches(password, userDetails.getPassword())) {
+            String storedPassword = userDetails.getPassword();
+            
+            logger.info("Attempting password match for user: {}", useremail);
+            boolean matches = passwordEncoder.matches(password, storedPassword);
+            logger.info("Password match result: {}", matches);
+
+            if (matches) {
                 User user = userService.getUserInfo(useremail);
                 List<String> allergies = userService.getUserAllergies(user.getId());
 
@@ -79,15 +89,18 @@ public class UserController {
                 logger.info("로그인 성공: {}", useremail);
                 return ResponseEntity.ok(userInfo);
             } else {
-                logger.warn("로그인 실패 - 잘못된 비밀번호: {}", useremail);
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "이메일 또는 비밀번호가 잘못되었습니다."));
+                logger.warn("Password match failed for user: {}", useremail);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "이메일 또는 비밀번호가 잘못되었습니다."));
             }
-        } catch (UsernameNotFoundException e) {
-            logger.warn("로그인 실패 - 이메일 찾을 수 없음: {}", useremail);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "이메일 또는 비밀번호가 잘못되었습니다."));
+        } catch (Exception e) {
+            logger.error("Login failed: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("message", "로그인 실패"));
         }
     }
 
+    // 로그아웃 처리
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
         SecurityContextHolder.clearContext();
@@ -95,6 +108,7 @@ public class UserController {
         return ResponseEntity.ok("로그아웃이 완료되었습니다.");
     }
 
+    // 사용자 정보 조회
     @GetMapping("/userInfo")
     public ResponseEntity<Map<String, Object>> getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -111,41 +125,61 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "사용자를 찾을 수 없습니다."));
         }
 
+        List<String> allergies = userService.getUserAllergies(user.getId());
+        logger.info("Retrieved allergies for user {}: {}", user.getId(), allergies);
+
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("id", user.getId());
         userInfo.put("name", user.getName());
         userInfo.put("useremail", user.getUseremail());
         userInfo.put("age", user.getAge());
         userInfo.put("role", user.getRole().toString());
-        userInfo.put("user_ige", user.getUser_ige());
+        userInfo.put("allergies", allergies);
+        userInfo.put("user_ige", allergies);
 
-        logger.info("사용자 정보 조회 성공: {}", currentUserEmail);
+        logger.info("사용자 정보 조회 성공. 전체 정보: {}", userInfo);
         return ResponseEntity.ok(userInfo);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestBody UserUpdateDTO userUpdateDTO) {
+    // 사용자 정보 업데이트
+    @PostMapping("/update")
+    public ResponseEntity<?> updateUser(@RequestBody UserUpdateDTO userUpdateDTO, HttpServletRequest request) {
+        logger.info("[Update] HTTP Method: {}", request.getMethod());
+        logger.info("[Update] Content-Type: {}", request.getContentType());
+        logger.info("[Update] 요청 데이터 전체 내용: {}", userUpdateDTO);
+        logger.info("[Update] 요청 헤더: {}", Collections.list(request.getHeaderNames())
+            .stream()
+            .collect(Collectors.toMap(h -> h, request::getHeader)));
+
         if (userUpdateDTO.getId() == null) {
+            logger.warn("[Update] 사용자 ID가 누락됨");
             return ResponseEntity.badRequest().body("사용자 ID는 필수입니다.");
         }
 
         try {
-            // 비밀번호가 변경된 경우
-            if (userUpdateDTO.getPassword() != null && !userUpdateDTO.getPassword().isEmpty()) {
-                // 비밀번호 강도 체크 로직 추가 가능 (예: 길이, 특수문자 포함 등)
-                if (userUpdateDTO.getPassword().length() < 2) {
-                    return ResponseEntity.badRequest().body("비밀번호는 최소 2자 이상이어야 합니다.");
-                }
-            }
-
             User updatedUser = userService.updateUser(userUpdateDTO);
-            return ResponseEntity.ok(updatedUser);
+            List<String> allergies = userService.getUserAllergies(updatedUser.getId());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", updatedUser.getId());
+            response.put("name", updatedUser.getName());
+            response.put("age", updatedUser.getAge());
+            response.put("useremail", updatedUser.getUseremail());
+            response.put("role", updatedUser.getRole().toString());
+            response.put("user_ige", allergies);
+            response.put("allergies", allergies);
+
+            logger.info("[Update] 사용자 정보 업데이트 성공: {}", updatedUser);
+            logger.info("[Update] 응답 데이터: {}", response);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            logger.error("사용자 정보 업데이트 중 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("업데이트 실패: " + e.getMessage());
+            logger.error("[Update] 업데이트 중 오류 발생", e);
+            logger.error("[Update] 상세 에러 메시지: {}", e.getMessage());
+            logger.error("[Update] 에러 스택트레이스: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("업데이트 실패: " + e.getMessage());
         }
     }
-
 
     @GetMapping("/admin")
     public ResponseEntity<String> getAdminPage() {

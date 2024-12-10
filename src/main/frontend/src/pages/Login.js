@@ -109,7 +109,7 @@ function Login({ setUserData }) {
                     </button>
                 </form>
                 <div className={styles.footerLinks}>
-                    <Link to="/join">회원가입</Link>
+                   <Link to="/FindPass">비밀번호 찾기</Link> | <Link to="/join">회원가입</Link>
                 </div>
             </div>
         </div>

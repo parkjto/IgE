@@ -19,6 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
 
     public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
@@ -60,34 +61,32 @@ public class UserService {
     }
 
     public User updateUser(UserUpdateDTO userUpdateDTO) {
+        logger.info("[Service] 사용자 업데이트 시작 - ID: {}", userUpdateDTO.getId());
+        
         User existingUser = userRepository.findById(userUpdateDTO.getId())
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-
+        
+        logger.info("[Service] 기존 사용자 정보: {}", existingUser);
+        
+        // 기본 정보 업데이트
         existingUser.setName(userUpdateDTO.getName());
         existingUser.setAge(userUpdateDTO.getAge());
-        existingUser.setUser_ige(userUpdateDTO.getAllergies());
-
-        // 비밀번호가 변경되면, 비밀번호 강도 체크 후 업데이트
-        if (userUpdateDTO.getPassword() != null && !userUpdateDTO.getPassword().isEmpty()) {
-            if (userUpdateDTO.getPassword().length() < 2) {
-                throw new RuntimeException("비밀번호는 최소 2자 이상이어야 합니다.");
-
-            }
-            String encPassword = bCryptPasswordEncoder.encode(userUpdateDTO.getPassword());
-            existingUser.setPassword(encPassword);
+        
+        if (userUpdateDTO.getAllergies() != null) {
+            logger.info("[Service] 알레르기 정보 업데이트: {}", userUpdateDTO.getAllergies());
+            existingUser.setUser_ige(userUpdateDTO.getAllergies());
         }
 
-        existingUser.setName(userUpdateDTO.getName());
-        existingUser.setUser_ige(userUpdateDTO.getAllergies() != null ? userUpdateDTO.getAllergies() : null);
+        if (userUpdateDTO.getPassword() != null && !userUpdateDTO.getPassword().isEmpty()) {
+            logger.info("[Service] 비밀번호 업데이트");
+            String encryptedPassword = bCryptPasswordEncoder.encode(userUpdateDTO.getPassword());
+            existingUser.setPassword(encryptedPassword);
+        }
 
-        return userRepository.save(existingUser);
+        User savedUser = userRepository.save(existingUser);
+        logger.info("[Service] 사용자 정보 저장 완료 - ID: {}", savedUser.getId());
+        
+        return savedUser;
     }
-
-
-
-
-
-
-
 
 }

@@ -9,7 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(23) // 확인: Java 23이 아니라 사용 중인 Java 버전 맞게 설정
+		languageVersion = JavaLanguageVersion.of(17) 
 	}
 }
 
@@ -48,7 +48,6 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// Logback 의존성 추가 (SLF4J 로깅 구현체)
-	implementation 'ch.qos.logback:logback-classic:1.4.11' // 최신 버전 확인
 }
 
 // -parameters 플래그 추가

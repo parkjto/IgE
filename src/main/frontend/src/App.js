@@ -11,15 +11,36 @@ import MapTest from "./pages/KakaoMapTest";
 import UseSearch from "./pages/useSearch";
 import Mypage from "./pages/Mypage";
 
+import FindPass from "./pages/FindPass";
+
 function App() {
     const [userData, setUserData] = useState(() => {
         const storedData = localStorage.getItem('userData');
-        return storedData ? JSON.parse(storedData) : { id : '',useremail: '', role: '', allergies: [], name: '', age: '' };
+        return storedData ? JSON.parse(storedData) : { 
+            id: '',
+            useremail: '', 
+            role: '', 
+            allergies: [], 
+            name: '', 
+            age: '',
+            user_ige: [] // user_ige 필드 추가
+        };
     });
 
     const handleLogout = () => {
         localStorage.removeItem('userData');
         setUserData({ id : '', useremail: '', role: '', allergies: [], name: '', age: '' });
+    };
+
+    // 사용자 정보 업데이트 함수 수정
+    const handleUserUpdate = (updatedUserInfo) => {
+        const newUserData = {
+            ...userData,
+            ...updatedUserInfo,
+            allergies: updatedUserInfo.user_ige || updatedUserInfo.allergies || [] // 둘 다 확인
+        };
+        setUserData(newUserData);
+        localStorage.setItem('userData', JSON.stringify(newUserData));
     };
 
     useEffect(() => {
@@ -41,11 +62,13 @@ function App() {
             <Routes>
                 <Route path="/login" element={<Login setUserData={setUserData} />} />
                 <Route path="/join" element={<Join />} />
+                <Route path="/findPass" element={<FindPass />} />
                 <Route path="/recipe" element={<Recipe user={userData} setUserData={setUserData} onLogout={handleLogout}/>} />
                 <Route path="/UseSearch" element={<UseSearch />} />
                 <Route path="/search" element={<Search user={userData} onLogout={handleLogout}/>} />
                 <Route path="/MapTest" element={<MapTest user={userData} onLogout={handleLogout}/>} />
-                <Route path='/Mypage' element={<Mypage user={userData} onLogout={handleLogout}/>} />
+                <Route path='/Mypage' element={<Mypage user={userData} onLogout={handleLogout} onUserUpdate={handleUserUpdate}/>} />
+                
                 <Route path="/rlocation" element={<RestaurantLocation user={userData} onLogout={handleLogout}/>} />
                 <Route path="/menuList" element={<MenuList userData={userData} />} />
                 <Route path="/" element={<Main user={userData} onLogout={handleLogout} />} />

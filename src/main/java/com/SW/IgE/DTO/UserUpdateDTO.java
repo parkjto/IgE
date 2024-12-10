@@ -10,7 +10,5 @@ public class UserUpdateDTO {
     private String name;
     private Integer age;
     private List<String> allergies;
-    private String password; // 비밀번호 추가
-
-    // 비밀번호 setter로 암호화 처리
+    private String password;
 }

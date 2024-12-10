@@ -25,11 +25,11 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true); // 자격 증명 허용
-        config.addAllowedOrigin("http://localhost:3000"); // React 클라이언트 주소
-        config.addAllowedHeader("*"); // 모든 헤더 허용
-        config.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
-        source.registerCorsConfiguration("/**", config); // 모든 요청 경로에 대해 CORS 설정 적용
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
 
@@ -50,18 +50,17 @@ public class SecurityConfig {
 
     // CSRF 설정
     private void configureCsrf(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // CSRF 토큰을 쿠키에 저장
-                .ignoringRequestMatchers("/loginProc", "/logout", "/join", "/Main", "/login", "/Mypage", "/update")); // 예외 경로 설정
+        http.csrf(csrf -> csrf.disable());  // CSRF 보호를 완전히 비활성화
     }
 
     // 권한 설정
     private void configureAuthorization(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/admin/**").hasRole("ADMIN")  // /admin/** 경로는 ADMIN 권한만 허용
-                .requestMatchers("/login", "/loginProc", "/join", "/error", "/Mypage").permitAll()  // 로그인 관련 경로는 모두 허용
-                .requestMatchers("/user/**").authenticated()  // /user/** 경로는 인증된 사용자만 접근 가능
-                .anyRequest().permitAll());  // 나머지 경로는 모두 허용
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/login", "/loginProc", "/join", "/error", "/update").permitAll()
+                .requestMatchers("/userInfo", "/Mypage").authenticated()
+                .requestMatchers("/user/**").authenticated()
+                .anyRequest().permitAll());
     }
 
     // 폼 로그인 설정
@@ -90,8 +89,7 @@ public class SecurityConfig {
 
     // 세션 관리 설정
     private void configureSessionManagement(HttpSecurity http) throws Exception {
-        // 세션 관리 정책을 IF_REQUIRED로 설정 (필요 시 세션 생성)
-        http.sessionManagement(sessionManagement ->
-                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+        http.sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
     }
 }

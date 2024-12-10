@@ -41,4 +41,6 @@ public class MenuService {
         logger.info("Fetched random menu: {}", randomMenu.getMenu_name());
         return randomMenu;
     }
+
+
 }
