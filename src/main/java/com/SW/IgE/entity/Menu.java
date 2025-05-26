@@ -1,35 +1,41 @@
 package com.SW.IgE.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.List;
-import com.SW.IgE.converter.IngredientsConverter;
+import java.util.ArrayList;
 
+@Data
+@Builder
 @Entity
-@Table(name = "receip500")
-@Getter
-@Setter
+@Table(name = "menus")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Menu {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "menu_name")
-    private String menu_name;
+    @Column(nullable = false)
+    private String name;
 
-    private String cooking_method;
+    @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false)
+    private Double price;
+
+    @Column(nullable = false)
     private String category;
-    private String dish_category;
-    private String food_type;
-    // IngredientsConverter를 사용하여 JSON 데이터를 List<String>로 자동 변환
-    @Convert(converter = IngredientsConverter.class)
-    @Column(name = "ingredients", columnDefinition = "json")
-    private List<String> ingredients;
-    private String serving_size;
+
+    @Column(nullable = false)
+    private String imageUrl;
+
+    @ElementCollection
+    @CollectionTable(name = "menu_allergens", joinColumns = @JoinColumn(name = "menu_id"))
+    @Column(name = "allergen")
+    private List<String> allergens = new ArrayList<>();
 }

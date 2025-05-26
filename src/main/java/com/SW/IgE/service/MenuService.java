@@ -4,6 +4,7 @@ import com.SW.IgE.entity.Menu;
 import com.SW.IgE.repository.MenuRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -12,11 +13,20 @@ import java.util.List;
 @Service
 public class MenuService {
 
-    private final MenuRepository menuRepository;
+    @Autowired
+    private MenuRepository menuRepository;
     private static final Logger logger = LoggerFactory.getLogger(MenuService.class);
 
-    public MenuService(MenuRepository menuRepository) {
-        this.menuRepository = menuRepository;
+    public List<Menu> getAllMenus() {
+        return menuRepository.findAll();
+    }
+
+    public List<Menu> getMenusByCategory(String category) {
+        return menuRepository.findByCategory(category);
+    }
+
+    public Menu saveMenu(Menu menu) {
+        return menuRepository.save(menu);
     }
 
     public Menu getRandomMenu() {
@@ -41,34 +51,34 @@ public class MenuService {
             throw new IllegalStateException("랜덤 메뉴를 찾을 수 없습니다.");
         }
 
-        logger.info("Fetched random menu: {}", randomMenu.getMenu_name());
+        logger.info("Fetched random menu: {}", randomMenu.getName());
         return randomMenu;
     }
 
     public Menu getRandomMenuByCategory(String category) {
-        List<String> foodTypes;
+        List<String> categories;
         
         switch (category) {
             case "한식":
-                foodTypes = Arrays.asList("밑반찬", "밥/죽/떡", "메인반찬", "찌개", "국/탕", "김치/젓갈/장류");
+                categories = Arrays.asList("한식");
                 break;
             case "양식":
-                foodTypes = Arrays.asList("양식", "스프");
+                categories = Arrays.asList("양식");
                 break;
-            case "간식":
-                foodTypes = Arrays.asList("디저트", "빵", "과자");
+            case "치킨":
+                categories = Arrays.asList("치킨");
                 break;
-            case "음료":
-                foodTypes = Arrays.asList("차/음료/술");
+            case "피자":
+                categories = Arrays.asList("피자");
                 break;
-            case "기타":
-                foodTypes = Arrays.asList("양념/소스/잼", "퓨전");
+            case "샐러드":
+                categories = Arrays.asList("샐러드");
                 break;
             default:
                 return getRandomMenu(); // 전체 카테고리에서 랜덤 선택
         }
         
-        return menuRepository.findRandomMenuByFoodTypes(foodTypes);
+        return menuRepository.findRandomMenuByCategories(categories);
     }
 
 }

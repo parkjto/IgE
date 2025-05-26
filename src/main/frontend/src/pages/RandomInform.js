@@ -19,7 +19,7 @@ const RandomMenu = () => {
     };
 
     const handleNearMap = () => {
-        navigate('/search',{ state: { menuName: menu.menu_name } });
+        navigate('/search',{ state: { menuName: menu.name } });
         // navigate('/MapTest');
     };
 
@@ -31,7 +31,7 @@ const RandomMenu = () => {
 
         axios.get(endpoint)
             .then(response => {
-                if (response.data && response.data.menu_name) {
+                if (response.data && response.data.name) {
                     setMenu(response.data);
                 } else {
                     setMenu({});
@@ -84,7 +84,7 @@ const RandomMenu = () => {
             </div>
             <div className={style.container}>
                 <p className={style.text} onClick={handleMenuClick}>
-                    {menu.menu_name || "메뉴를 불러올 수 없습니다"}
+                    {menu.name || "메뉴를 불러올 수 없습니다"}
                 </p>
             </div>
             <div className={style.abutton}>

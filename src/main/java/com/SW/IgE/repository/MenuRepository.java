@@ -30,6 +30,8 @@ public interface MenuRepository extends JpaRepository<Menu, Integer> {
     @Query("SELECT m FROM Menu m WHERE m.id = :id")
     Menu findMenuById(@Param("id") Integer id);  // @Param("id")를 추가하여 파라미터 이름을 명시
 
-    @Query("SELECT m FROM Menu m WHERE m.food_type IN :foodTypes ORDER BY RAND() LIMIT 1")
-    Menu findRandomMenuByFoodTypes(@Param("foodTypes") List<String> foodTypes);
+    @Query("SELECT m FROM Menu m WHERE m.category IN :categories ORDER BY RAND() LIMIT 1")
+    Menu findRandomMenuByCategories(@Param("categories") List<String> categories);
+
+    List<Menu> findByCategory(String category);
 }

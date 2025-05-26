@@ -59,7 +59,7 @@ const InformIgE = ({ isLoggedIn, setIsLoggedIn }) => {
                     ? "정보를 가져오는 중..."
                     : error
                         ? error
-                        : (informs.length > 0 ? informs[currentIndex].inform : "데이터가 없습니다.")
+                        : (informs.length > 0 ? informs[currentIndex].inform : "그거 아세요?? 귤에 붙어있는 하얀거 이름은 귤락 입니다.")
                 }
             </div>
         </div>
