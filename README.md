@@ -28,7 +28,7 @@ IgE는 음식 알레르기 정보를 제공하고, 사용자 맞춤형 메뉴 �
 - **백엔드:** Java 17, Spring Boot, JPA, REST API
 - **프론트엔드:** React.js, JavaScript, CSS
 - **DB:** (예: MySQL, H2 등)
-- **지도 API:** ( Kakao Map API)
+- **지도 API:** ( Kakao Map API, Naver Local Search API)
 - **빌드/관리:** Gradle, npm
 
 ---
