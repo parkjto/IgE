@@ -1,6 +1,4 @@
 
-## 🚀 실행 방법
-
 ### 백엔드(Spring Boot)
 ```bash
 ./gradlew bootRun
