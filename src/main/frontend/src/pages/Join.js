@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import styles from './Join.module.css'; // CSS 모듈 import
-import Header from "./Header"; // Header 컴포넌트 import
+import styles from './Join.module.css';
+import Header from "./Header";
+import { API_ENDPOINTS } from '../config/api';
+import { ALLERGY_LAYOUT } from '../constants/allergies';
+import { validatePassword, validatePasswordConfirm, validateAge } from '../utils/validation';
 
 function Join() {
     const [user, setUser] = useState({
@@ -42,8 +45,24 @@ function Join() {
             return;
         }
 
-        if (user.password !== passwordConfirm) {
-            setErrorMessage('비밀번호가 일치하지 않습니다.'); // 비밀번호 불일치 에러 메시지
+        // 비밀번호 유효성 검사
+        const passwordValidation = validatePassword(user.password);
+        if (!passwordValidation.isValid) {
+            setErrorMessage(passwordValidation.message);
+            return;
+        }
+
+        // 비밀번호 확인 검증
+        const passwordConfirmValidation = validatePasswordConfirm(user.password, passwordConfirm);
+        if (!passwordConfirmValidation.isValid) {
+            setErrorMessage(passwordConfirmValidation.message);
+            return;
+        }
+
+        // 나이 유효성 검사
+        const ageValidation = validateAge(user.age);
+        if (!ageValidation.isValid) {
+            setErrorMessage(ageValidation.message);
             return;
         }
 
@@ -53,7 +72,7 @@ function Join() {
         };
 
         try {
-            const response = await axios.post('http://localhost:8081/join', formData, {
+            const response = await axios.post(API_ENDPOINTS.JOIN, formData, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -61,7 +80,9 @@ function Join() {
             alert('회원가입 완료');
             navigate('/'); // 회원가입 성공 시 메인 페이지로 이동
         } catch (error) {
-            console.error('회원가입 에러: ', error.response ? error.response.data : error);
+            if (process.env.NODE_ENV === 'development') {
+                console.error('회원가입 에러: ', error.response ? error.response.data : error);
+            }
             if (error.response && error.response.status === 409) {
                 setErrorMessage(error.response.data); // 이미 존재하는 이메일에 대한 에러 메시지
             } else {
@@ -141,12 +162,7 @@ function Join() {
                                 <h4 className={styles.allergyTitle}>알레르기 선택</h4>
                                 <table className={styles.allergyTable}>
                                     <tbody>
-                                    {[
-                                        ["계란", "콩"],
-                                        ["우유", "밀"],
-                                        ["땅콩", "생선"],
-                                        ["갑각류", "견과류"]
-                                    ].map((row, rowIndex) => (
+                                    {ALLERGY_LAYOUT.map((row, rowIndex) => (
                                         <tr key={rowIndex}>
                                             {row.map((allergy) => (
                                                 <td key={allergy} className={styles.allergyCell}>

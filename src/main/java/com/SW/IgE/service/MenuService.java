@@ -1,6 +1,7 @@
 package com.SW.IgE.service;
 
 import com.SW.IgE.entity.Menu;
+import com.SW.IgE.exception.MenuNotFoundException;
 import com.SW.IgE.repository.MenuRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ public class MenuService {
         if (minId == null || maxId == null) {
             // 데이터베이스에 메뉴가 없을 경우 예외를 던지도록 처리
             logger.error("No menu data found in the database.");
-            throw new IllegalStateException("메뉴가 존재하지 않습니다.");
+            throw new MenuNotFoundException("메뉴가 존재하지 않습니다.");
         }
 
         // minId와 maxId 사이에서 랜덤 ID 생성 (Math.random()을 사용)
@@ -48,7 +49,7 @@ public class MenuService {
 
         if (randomMenu == null) {
             logger.error("Random menu not found with id {}, returning error.", randomId);
-            throw new IllegalStateException("랜덤 메뉴를 찾을 수 없습니다.");
+            throw new MenuNotFoundException("랜덤 메뉴를 찾을 수 없습니다.");
         }
 
         logger.info("Fetched random menu: {}", randomMenu.getName());

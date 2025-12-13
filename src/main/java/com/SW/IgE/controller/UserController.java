@@ -145,12 +145,7 @@ public class UserController {
     // 사용자 정보 업데이트
     @PostMapping("/update")
     public ResponseEntity<?> updateUser(@RequestBody UserUpdateDTO userUpdateDTO, HttpServletRequest request) {
-        logger.info("[Update] HTTP Method: {}", request.getMethod());
-        logger.info("[Update] Content-Type: {}", request.getContentType());
-        logger.info("[Update] 요청 데이터 전체 내용: {}", userUpdateDTO);
-        logger.info("[Update] 요청 헤더: {}", Collections.list(request.getHeaderNames())
-            .stream()
-            .collect(Collectors.toMap(h -> h, request::getHeader)));
+        logger.info("[Update] 사용자 정보 업데이트 요청 - ID: {}", userUpdateDTO.getId());
 
         if (userUpdateDTO.getId() == null) {
             logger.warn("[Update] 사용자 ID가 누락됨");
@@ -170,13 +165,10 @@ public class UserController {
             response.put("user_ige", allergies);
             response.put("allergies", allergies);
 
-            logger.info("[Update] 사용자 정보 업데이트 성공: {}", updatedUser);
-            logger.info("[Update] 응답 데이터: {}", response);
+            logger.info("[Update] 사용자 정보 업데이트 성공 - ID: {}", updatedUser.getId());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            logger.error("[Update] 업데이트 중 오류 발생", e);
-            logger.error("[Update] 상세 에러 메시지: {}", e.getMessage());
-            logger.error("[Update] 에러 스택트레이스: ", e);
+            logger.error("[Update] 업데이트 중 오류 발생 - ID: {}, 에러: {}", userUpdateDTO.getId(), e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("업데이트 실패: " + e.getMessage());
         }

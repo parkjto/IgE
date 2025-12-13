@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './Login.module.css';
 import logoimg from "../img/android-chrome-192x192.png";
-
-const API_URL = 'http://localhost:8081/login';
+import { API_ENDPOINTS } from '../config/api';
+import { validateEmail } from '../utils/validation';
 
 function Login({ setUserData }) {
     const navigate = useNavigate();
@@ -17,10 +17,6 @@ function Login({ setUserData }) {
         setUser((prevState) => ({ ...prevState, [name]: value }));
     };
 
-    const validateEmail = (email) => {
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailPattern.test(email);
-    };
 
     const getCsrfToken = () => {
         return document.cookie
@@ -45,7 +41,7 @@ function Login({ setUserData }) {
 
         setLoading(true);
         try {
-            const response = await axios.post(API_URL, {
+            const response = await axios.post(API_ENDPOINTS.LOGIN, {
                 useremail: user.useremail,
                 password: user.password
             }, {
@@ -72,7 +68,10 @@ function Login({ setUserData }) {
             } else {
                 setErrorMessage('서버에 요청을 보내는 중 오류가 발생했습니다.');
             }
-            console.error('로그인 에러: ', error);
+            // 프로덕션에서는 로깅 라이브러리 사용 권장
+            if (process.env.NODE_ENV === 'development') {
+                console.error('로그인 에러: ', error);
+            }
         } finally {
             setLoading(false);
         }

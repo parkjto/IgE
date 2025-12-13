@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styles from './MenuList.module.css';
+import { API_ENDPOINTS } from '../config/api';
 
 const MenuList = ({ userData }) => {
     const [menus, setMenus] = useState([]);
@@ -11,7 +12,7 @@ const MenuList = ({ userData }) => {
     useEffect(() => {
         const fetchMenus = async () => {
             try {
-                const response = await axios.get('http://localhost:8081/api/menus');
+                const response = await axios.get(API_ENDPOINTS.MENUS);
                 setMenus(response.data);
             } catch (err) {
                 setError(`Failed to load menus: ${err.response ? err.response.data.message : err.message}`);
@@ -28,12 +29,13 @@ const MenuList = ({ userData }) => {
 
     const userAllergies = userData?.allergies || [];
 
+    // Menu 엔티티의 allergens 필드를 사용하여 필터링
     const filteredMenus = menus.filter(menu =>
-        menu.ingredients.every(ingredient => !userAllergies.includes(ingredient))
+        menu.allergens && menu.allergens.every(allergen => !userAllergies.includes(allergen))
     );
 
     const nonRecommendedMenus = menus.filter(menu =>
-        menu.ingredients.some(ingredient => userAllergies.includes(ingredient))
+        menu.allergens && menu.allergens.some(allergen => userAllergies.includes(allergen))
     );
 
     return (
@@ -57,11 +59,13 @@ const MenuList = ({ userData }) => {
 
                     <ul className={styles.menuList}>
                         {filteredMenus.length > 0 ? filteredMenus.map((menu) => (
-                            <div className={styles.menuListBox}>
-                                <li key={menu.id} className={styles.menuItem}>
-                                    <h3 className={styles.menuName}>{menu.menu_name}</h3>
-                                    <p className={styles.menuIngredients}>재료: {menu.ingredients.join(', ')}</p>
-
+                            <div key={menu.id} className={styles.menuListBox}>
+                                <li className={styles.menuItem}>
+                                    <h3 className={styles.menuName}>{menu.name}</h3>
+                                    <p className={styles.menuDescription}>{menu.description}</p>
+                                    {menu.allergens && menu.allergens.length > 0 && (
+                                        <p className={styles.menuIngredients}>알레르기 유발 성분: {menu.allergens.join(', ')}</p>
+                                    )}
                                 </li>
                             </div>
                         )) : <p>알레르기를 고려한 추천 메뉴가 없습니다.</p>}
@@ -73,9 +77,12 @@ const MenuList = ({ userData }) => {
                 <ul className={styles.menuList}>
                     {nonRecommendedMenus.length > 0 ? nonRecommendedMenus.map((menu) => (
                         <li key={menu.id} className={styles.menuItem}>
-                            <h3 className={styles.menuName}>{menu.menu_name}</h3>
-                            <p className={styles.menuIngredients}>재료: {menu.ingredients.join(', ')}</p>
-                            <p className={styles.nonRecommended}>추천하지 않아요</p>
+                            <h3 className={styles.menuName}>{menu.name}</h3>
+                            <p className={styles.menuDescription}>{menu.description}</p>
+                            {menu.allergens && menu.allergens.length > 0 && (
+                                <p className={styles.menuIngredients}>알레르기 유발 성분: {menu.allergens.join(', ')}</p>
+                            )}
+                            <p className={styles.nonRecommended}>⚠️ 추천하지 않아요</p>
                             <hr />
                         </li>
                     )) : <p>비추천 메뉴가 없습니다.</p>}

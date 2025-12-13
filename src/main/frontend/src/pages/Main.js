@@ -7,7 +7,9 @@ const Main = ({ user, onLogout }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        console.log("Main 컴포넌트에서 전달받은 user 데이터:", user);
+        if (process.env.NODE_ENV === 'development') {
+            console.log("Main 컴포넌트에서 전달받은 user 데이터:", user);
+        }
         if (user && user.name) {
             setIsLoggedIn(true);
         } else {

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import axios from "axios";  
 import styles from "./Mypage.module.css";
+import { API_ENDPOINTS } from '../config/api';
+import { ALLERGY_LAYOUT } from '../constants/allergies';
+import { validatePassword, validatePasswordConfirm } from '../utils/validation';
 
 const Mypage = ({ user, onLogout, onUserUpdate }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -18,7 +21,9 @@ const Mypage = ({ user, onLogout, onUserUpdate }) => {
     // user 정보가 변경될 때마다 updatedInfo 업데이트
     useEffect(() => {
         if (user && user.id) {
-            console.log("현재 사용자 정보:", user);
+            if (process.env.NODE_ENV === 'development') {
+                console.log("현재 사용자 정보:", user);
+            }
             setIsLoggedIn(true);
             setUpdatedInfo({
                 id: user.id,
@@ -38,14 +43,20 @@ const Mypage = ({ user, onLogout, onUserUpdate }) => {
     const handleSave = () => {
         // 비밀번호 유효성 검사
         if (updatedInfo.password || updatedInfo.rePassword) {
-            if (updatedInfo.password !== updatedInfo.rePassword) {
-                console.error("[Validation] 비밀번호 불일치");
-                alert("비밀번호가 일치하지 않습니다.");
-                return;
+            if (updatedInfo.password) {
+                const passwordValidation = validatePassword(updatedInfo.password);
+                if (!passwordValidation.isValid) {
+                    alert(passwordValidation.message);
+                    return;
+                }
             }
-            if (updatedInfo.password.length < 2) {
-                console.error("[Validation] 비밀번호 길이 부족");
-                alert("비밀번호는 최소 2자 이상이어야 합니다.");
+
+            const passwordConfirmValidation = validatePasswordConfirm(
+                updatedInfo.password, 
+                updatedInfo.rePassword
+            );
+            if (!passwordConfirmValidation.isValid) {
+                alert(passwordConfirmValidation.message);
                 return;
             }
         }
@@ -59,14 +70,16 @@ const Mypage = ({ user, onLogout, onUserUpdate }) => {
             password: updatedInfo.password || null
         };
 
-        console.log("[Request] 전송할 데이터:", {
-            ...requestData,
-            password: requestData.password ? '***' : null  // 비밀번호는 로그에 표시하지 않음
-        });
+        if (process.env.NODE_ENV === 'development') {
+            console.log("[Request] 전송할 데이터:", {
+                ...requestData,
+                password: requestData.password ? '***' : null
+            });
+        }
 
         const config = {
             method: 'POST',
-            url: 'http://localhost:8081/update',
+            url: API_ENDPOINTS.UPDATE,
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
@@ -74,20 +87,16 @@ const Mypage = ({ user, onLogout, onUserUpdate }) => {
             data: requestData
         };
 
-        console.log("[Request] 요청 설정:", {
-            method: config.method,
-            url: config.url,
-            headers: config.headers
-        });
-
         axios(config)
             .then(response => {
-                console.log("[Response] 전체 응답:", {
-                    status: response.status,
-                    statusText: response.statusText,
-                    headers: response.headers,
-                    data: response.data
-                });
+                if (process.env.NODE_ENV === 'development') {
+                    console.log("[Response] 전체 응답:", {
+                        status: response.status,
+                        statusText: response.statusText,
+                        headers: response.headers,
+                        data: response.data
+                    });
+                }
                 
                 const updatedUserInfo = {
                     ...user,
@@ -97,7 +106,9 @@ const Mypage = ({ user, onLogout, onUserUpdate }) => {
                     user_ige: response.data.user_ige || []
                 };
 
-                console.log("[Update] 업데이트된 사용자 정보:", updatedUserInfo);
+                if (process.env.NODE_ENV === 'development') {
+                    console.log("[Update] 업데이트된 사용자 정보:", updatedUserInfo);
+                }
                 onUserUpdate(updatedUserInfo);
                 alert("수정된 정보가 저장되었습니다.");
                 setIsEditing(false);
@@ -108,27 +119,19 @@ const Mypage = ({ user, onLogout, onUserUpdate }) => {
                 }
             })
             .catch(error => {
-                console.error("[Error] 전체 에러 객체:", error);
-                console.error("[Error] 요청 설정:", {
-                    method: error.config?.method,
-                    url: error.config?.url,
-                    headers: error.config?.headers,
-                    data: error.config?.data ? {
-                        ...error.config.data,
-                        password: error.config.data.password ? '***' : null
-                    } : null
-                });
+                if (process.env.NODE_ENV === 'development') {
+                    console.error("[Error] 전체 에러 객체:", error);
+                    if (error.response) {
+                        console.error("[Error] 응답 상태:", error.response.status);
+                        console.error("[Error] 응답 데이터:", error.response.data);
+                    }
+                }
                 
                 if (error.response) {
-                    console.error("[Error] 응답 상태:", error.response.status);
-                    console.error("[Error] 응답 데이터:", error.response.data);
-                    console.error("[Error] 응답 헤더:", error.response.headers);
                     alert(`수정에 실패했습니다: ${error.response.data || '서버 오류가 발생했습니다.'}`);
                 } else if (error.request) {
-                    console.error("[Error] 요청 객체:", error.request);
                     alert("서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.");
                 } else {
-                    console.error("[Error] 에러 메시지:", error.message);
                     alert("수정 중 오류가 발생했습니다: " + error.message);
                 }
             });
@@ -206,12 +209,7 @@ const Mypage = ({ user, onLogout, onUserUpdate }) => {
                             <div className={styles.allergySelection}>
                                 <table className={styles.allergyTable}>
                                     <tbody>
-                                    {[
-                                        ["계란", "콩"],
-                                        ["우유", "밀"],
-                                        ["땅콩", "생선"],
-                                        ["갑각류", "견과류"]
-                                    ].map((row, rowIndex) => (
+                                    {ALLERGY_LAYOUT.map((row, rowIndex) => (
                                         <tr key={rowIndex}>
                                             {row.map((allergy) => (
                                                 <td key={allergy} className={styles.allergyCell}>

@@ -1,6 +1,9 @@
 package com.SW.IgE.service;
 
 import com.SW.IgE.DTO.UserUpdateDTO;
+import com.SW.IgE.constants.AllergyConstants;
+import com.SW.IgE.exception.InvalidAllergyException;
+import com.SW.IgE.exception.InvalidPasswordException;
 import com.SW.IgE.exception.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.SW.IgE.entity.User;
 import com.SW.IgE.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
@@ -33,6 +35,24 @@ public class UserService {
     }
 
     public void joinUser(User user) {
+        // 비밀번호 유효성 검사
+        if (user.getPassword() == null || user.getPassword().length() < AllergyConstants.MIN_PASSWORD_LENGTH) {
+            throw new InvalidPasswordException(
+                String.format("비밀번호는 최소 %d자 이상이어야 합니다.", AllergyConstants.MIN_PASSWORD_LENGTH)
+            );
+        }
+
+        // 알레르기 유형 유효성 검사
+        if (user.getUser_ige() != null) {
+            for (String allergy : user.getUser_ige()) {
+                if (!AllergyConstants.isValidAllergyType(allergy)) {
+                    throw new InvalidAllergyException(
+                        String.format("유효하지 않은 알레르기 유형입니다: %s", allergy)
+                    );
+                }
+            }
+        }
+        
         String rawPassword = user.getPassword();
         String encPassword = bCryptPasswordEncoder.encode(rawPassword);
         user.setPassword(encPassword);

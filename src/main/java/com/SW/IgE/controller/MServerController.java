@@ -66,15 +66,13 @@ public class MServerController {
 
         if (restaurants.isEmpty()) {
             LOGGER.log(Level.WARNING, "No restaurants found for query: {0}", query);
-        } else {
-            LOGGER.log(Level.INFO, "Number of restaurants found: {0}", restaurants.size());
+            return List.of(); // 빈 리스트 반환
         }
 
-        List<Map<String, String>> result = naverSearchService.searchRestaurants(query);
+        LOGGER.log(Level.INFO, "Number of restaurants found: {0}", restaurants.size());
+        LOGGER.log(Level.INFO, "Distance calculation completed. Number of results (with distance): {0}", restaurants.size());
 
-        LOGGER.log(Level.INFO, "Distance calculation completed. Number of results (with distance): {0}", result.size());
-
-        return naverSearchService.searchRestaurantsWithDistance(result, userX, userY, maxDistance);
+        return naverSearchService.searchRestaurantsWithDistance(restaurants, userX, userY, maxDistance);
     }
 
 }

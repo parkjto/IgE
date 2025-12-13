@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import style from './InformIgE.module.css';
 import { Link } from 'react-router-dom';
+import { API_ENDPOINTS } from '../config/api';
 
 const InformIgE = ({ isLoggedIn, setIsLoggedIn }) => {
     const [informs, setInforms] = useState([]);
@@ -12,13 +13,15 @@ const InformIgE = ({ isLoggedIn, setIsLoggedIn }) => {
     useEffect(() => {
         if (isLoggedIn) {
             setLoading(true); // 로딩 상태 시작
-            axios.get("http://localhost:8081/api/all-informs")
+            axios.get(API_ENDPOINTS.ALL_INFORMS)
                 .then(response => {
                     setInforms(response.data);
                     setLoading(false); // 로딩 완료
                 })
                 .catch(error => {
-                    console.error("정보 가져오기 실패:", error);
+                    if (process.env.NODE_ENV === 'development') {
+                        console.error("정보 가져오기 실패:", error);
+                    }
                     setError("정보를 불러오는 데 실패했습니다.");
                     setLoading(false); // 로딩 완료
                 });

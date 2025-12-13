@@ -3,6 +3,7 @@ import axios from 'axios';
 import ImageChange from "./ImageChange";
 import style from './RandomInform.module.css';
 import {useNavigate} from "react-router-dom";
+import { API_ENDPOINTS } from '../config/api';
 
 const RandomMenu = () => {
     const [menu, setMenu] = useState({});
@@ -26,8 +27,8 @@ const RandomMenu = () => {
 
     const fetchRandomMenu = () => {
         const endpoint = selectedCategory === "전체" 
-            ? 'http://localhost:8081/api/menus/random'
-            : `http://localhost:8081/api/menus/random/${selectedCategory}`;
+            ? API_ENDPOINTS.MENUS_RANDOM
+            : API_ENDPOINTS.MENUS_RANDOM_BY_CATEGORY(selectedCategory);
 
         axios.get(endpoint)
             .then(response => {

@@ -3,6 +3,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styles from './Join.module.css';
 import Header from "./Header";
+import { API_ENDPOINTS } from '../config/api';
+import { ALLERGY_LAYOUT } from '../constants/allergies';
+import { validatePassword, validatePasswordConfirm, validateAge } from '../utils/validation';
 
 function FindPass() {
     const [userInfo, setUserInfo] = useState({
@@ -41,13 +44,32 @@ function FindPass() {
             return;
         }
 
-        if (userInfo.newPassword !== userInfo.confirmPassword) {
-            setErrorMessage('새 비밀번호가 일치하지 않습니다.');
+        // 비밀번호 유효성 검사
+        const passwordValidation = validatePassword(userInfo.newPassword);
+        if (!passwordValidation.isValid) {
+            setErrorMessage(passwordValidation.message);
+            return;
+        }
+
+        // 비밀번호 확인 검증
+        const passwordConfirmValidation = validatePasswordConfirm(
+            userInfo.newPassword, 
+            userInfo.confirmPassword
+        );
+        if (!passwordConfirmValidation.isValid) {
+            setErrorMessage(passwordConfirmValidation.message);
+            return;
+        }
+
+        // 나이 유효성 검사
+        const ageValidation = validateAge(userInfo.age);
+        if (!ageValidation.isValid) {
+            setErrorMessage(ageValidation.message);
             return;
         }
 
         try {
-            const response = await axios.post('http://localhost:8081/reset-password', {
+            const response = await axios.post(API_ENDPOINTS.RESET_PASSWORD, {
                 useremail: userInfo.useremail,
                 name: userInfo.name,
                 age: userInfo.age,
@@ -60,7 +82,9 @@ function FindPass() {
                 navigate('/login');
             }, 2000);
         } catch (error) {
-            console.error('비밀번호 재설정 에러:', error);
+            if (process.env.NODE_ENV === 'development') {
+                console.error('비밀번호 재설정 에러:', error);
+            }
             setErrorMessage(error.response?.data || '비밀번호 재설정에 실패했습니다.');
         }
     };
@@ -127,12 +151,7 @@ function FindPass() {
                         <div className={styles.allergySelection}>
                             <table className={styles.allergyTable}>
                                 <tbody>
-                                {[
-                                    ["계란", "콩"],
-                                    ["우유", "밀"],
-                                    ["땅콩", "생선"],
-                                    ["갑각류", "견과류"]
-                                ].map((row, rowIndex) => (
+                                {ALLERGY_LAYOUT.map((row, rowIndex) => (
                                     <tr key={rowIndex}>
                                         {row.map((allergy) => (
                                             <td key={allergy} className={styles.allergyCell}>
