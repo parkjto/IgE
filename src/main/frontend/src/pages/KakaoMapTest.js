@@ -50,7 +50,7 @@ const KakaoMapTest = ({ userPosition, clickedRestaurant, isMapVisible, onRegionC
     useEffect(() => {
         if (userPosition && !map) {
             const script = document.createElement("script");
-            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=3abe3146cdb7a57e6e03b6ca6e652183&libraries=services&autoload=false`;
+            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_KAKAO_MAP_CLIENT_ID}&libraries=services&autoload=false`;
             script.async = true;
             document.body.appendChild(script);
 

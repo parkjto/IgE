@@ -9,7 +9,7 @@
 
   <!-- Kakao 지도 API는 앱 실행 후 동적으로 삽입 -->
   <script>
-    window.KAKAO_MAP_CLIENT_ID = "3abe3146cdb7a57e6e03b6ca6e652183";
+    window.KAKAO_MAP_CLIENT_ID = "%REACT_APP_KAKAO_MAP_CLIENT_ID%";
     if (window.KAKAO_MAP_CLIENT_ID) {
       const script = document.createElement("script");
       script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${window.KAKAO_MAP_CLIENT_ID}&autoload=false`;
